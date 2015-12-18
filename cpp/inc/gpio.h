@@ -15,8 +15,7 @@ public:
   enum mode {Alt0 , Alt1 , Alt2 , Alt3, Alt4 , Alt5 , Alt6};
 	enum dir {Input, Output};
   enum speed {Low = 0 , Medium = 1 , High=3};
-  enum out {PushPull , OpenDrain};
-  enum PP {NoPP , PullUp , PullDown};
+  enum PP {PullUp , PullDown};
   enum rgstr {
   PDOR = 0x00,
   PSOR = 0x04,
