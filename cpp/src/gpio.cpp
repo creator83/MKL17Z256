@@ -21,7 +21,7 @@ Gpio::Gpio(uint8_t p )
 
 void Gpio::setOutPin (uint8_t pin, mode m, dir d)
 {
-	*(reg)(portAdrSet[prt]+pin*4) |= (0x100 << m);
+	*(reg)(portAdrSet[prt]+pin*4) |= (0x80 << m);
 	*(reg)(portAdr[prt]+PDDR) &= ~(1 << pin);
 	*(reg)(portAdr[prt]+PDDR) |= (d << pin);
 }
@@ -49,10 +49,10 @@ void Gpio::SetPinState (uint8_t pin , uint8_t state)
 
 void Gpio::setOutPort (uint32_t value)
 {
-	*(reg)(portAdrSet[prt]+GPCLR) = ((0x0000FFFF&value)<<16);
-	*(reg)(portAdrSet[prt]+GPCLR) |= (100 << Alt1);
-	*(reg)(portAdrSet[prt]+GPCHR) = ((0xFFFF0000&value)<<16);
-	*(reg)(portAdrSet[prt]+GPCHR) |= (100 << Alt1);
+	*(reg)(portAdrSet[prt]+GPCLR) |= ((0x0000FFFF&value)<<16);
+	*(reg)(portAdrSet[prt]+GPCLR) |= (0x80 << Alt1);
+	*(reg)(portAdrSet[prt]+GPCHR) |= ((0xFFFF0000&value)<<16);
+	*(reg)(portAdrSet[prt]+GPCHR) |= (0x80 << Alt1);
 }
 
 void Gpio::setValPort (uint32_t value)

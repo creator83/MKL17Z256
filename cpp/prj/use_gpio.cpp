@@ -4,9 +4,9 @@
 
 int main ()
 {
-	Gpio A (Gpio::A);
-	A.setOutPin (0);
-	A.setPin (0);
+	Gpio E (Gpio::E);
+	E.setOutPin (23);
+	E.setPin (23);
 	
 	while (1)
 	{

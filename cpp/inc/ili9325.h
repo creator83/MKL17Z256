@@ -60,7 +60,7 @@ public:
 	
 protected:
 private:
-	enum commPins {RST, WR , CS , RS ,RD};
+	enum commPins {RST=25, WR=30 , CS=24 , RS=29 ,RD=31};
 
 #ifdef BIT8
 	Gpio pinDataLow;

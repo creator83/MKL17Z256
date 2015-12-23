@@ -17,10 +17,10 @@ ili9325::ili9325()
 }
 #else
 ili9325::ili9325()
-:pinDataLow (Gpio::B) , pinDataHigh (Gpio::D) , pinCommand (Gpio::C)
+:pinDataLow (Gpio::D) , pinDataHigh (Gpio::C) , pinCommand (Gpio::E)
 {
-	pinDataLow.setOutPort(0xFF0000FF);
-	pinDataHigh.setOutPort(0xFF000000);
+	pinDataLow.setOutPort(0xFF);
+	pinDataHigh.setOutPort(0xFF);
 	pinCommand.setOutPin(CS);
 	pinCommand.setOutPin(RS);	
 	pinCommand.setOutPin(RST);
@@ -193,8 +193,8 @@ void ili9325::index(uint16_t indx)
 	pinCommand.clearPin(CS);
 	pinCommand.clearPin(RS);	
 	pinDataLow.clearValPort (0xFF);
-	pinDataHigh.clearValPort (0xFF0000);
-	pinDataLow.setValPort(static_cast <uint8_t>(indx));
+	pinDataHigh.clearValPort (0xFF);
+	pinDataLow.setValPort(0xFF&indx);
 	pinDataHigh.setValPort (indx >> 8);
 	pinCommand.clearPin(WR);
 	delay_us(5);
@@ -204,11 +204,11 @@ void ili9325::index(uint16_t indx)
 void ili9325::data(uint16_t dta)
 {
 	//отправляем данные
-	pinCommand.setPin(RS);
 	pinCommand.clearPin(CS);
+	pinCommand.setPin(RS);
 	pinDataLow.clearValPort (0xFF);
-	pinDataHigh.clearValPort (0xFF0000);
-	pinDataLow.setValPort(static_cast <uint8_t>(dta));
+	pinDataHigh.clearValPort (0xFF);
+	pinDataLow.setValPort(0xFF&dta);
 	pinDataHigh.setValPort (dta >> 8);
 	pinCommand.clearPin(WR);
 	delay_us(5);

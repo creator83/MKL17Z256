@@ -1,15 +1,16 @@
 #include "MKL17Z4.h"                    // Device header
 #include "gpio.h"
-
+#include "ili9325.h"
 
 int main ()
 {
-	Gpio A (Gpio::A);
-	A.setOutPin (0);
-	A.setPin (0);
+	ili9325 lcd;
+	lcd.fill_screen (CYAN);
+	
 	
 	while (1)
 	{
+
 		
 	}
 }
