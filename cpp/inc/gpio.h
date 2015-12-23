@@ -37,15 +37,16 @@ private:
 public:
   Gpio(Port p );
   Gpio(uint8_t p );
-  void setOutPin (unsigned char pin, mode m = Alt1, dir d = Output);	
-  void setPin (unsigned int pin);
-  void clearPin (unsigned char pin);	
-  void setValPort (unsigned int value);	
-  void setOutPort (unsigned int value);		
-  void ChangePinState (unsigned char pin);
-  void SetPinState (unsigned char pin , unsigned char state);
-  void PuPd (unsigned char pin , PP p);
-  bool PinState (unsigned char pin);
+  void setOutPin (uint8_t pin, mode m = Alt1, dir d = Output);	
+  void setPin (uint8_t pin);
+  void clearPin (uint8_t pin);	
+  void setValPort (uint32_t value);	
+	void clearValPort (uint32_t value);	
+  void setOutPort (uint32_t value);		
+  void ChangePinState (uint8_t pin);
+  void SetPinState (uint8_t pin , uint8_t state);
+  void PuPd (uint8_t pin , PP p);
+  bool PinState (uint8_t pin);
 }; //Gpio
 
 
