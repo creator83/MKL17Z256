@@ -1,5 +1,4 @@
 #include "MKL17Z4.h"                    // Device header
-#include "gpio.h"
 #include "ili9325.h"
 
 int main ()

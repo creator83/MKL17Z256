@@ -47,6 +47,7 @@ public:
   void SetPinState (uint8_t pin , uint8_t state);
   void PuPd (uint8_t pin , PP p);
   bool PinState (uint8_t pin);
+	void test ();
 }; //Gpio
 
 

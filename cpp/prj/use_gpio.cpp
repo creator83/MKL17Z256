@@ -6,10 +6,14 @@
 int main ()
 {
   Gpio E (Gpio::E);
-  //E.setOutPin (16);
-  E.setOutPort (0xF0000);
+	Gpio D (Gpio::D);
+ // E.setOutPin (16);
+	/*PORTE->GPCHR |= (1 << 16) |(1 << 8);
+	PTE->PDDR |= 1 << 16;*/
 	
-  //PORTE->GPCLR = ((PORTA_BIT6 | PORTA_BIT3 | PORTA_BIT0) | (PORT_MUX_GPIO | PORT_PS_UP_ENABLE | PORT_PFE));
+  E.setOutPort (0xF0000);
+	D.setOutPort (0xFF);
+	//E.test();
 
   while (1)
   {
