@@ -5,7 +5,7 @@
 #ifndef ILI9325_H
 #define ILI9325_H
 
-//#define BIT8
+#define BIT8
 //registers
 
 const uint16_t DRIVER_OUTPUT_CONTROL_1 = 0x01;
@@ -110,7 +110,7 @@ private:
 	enum commPins {RST=18, WR=17 , CS=19 , RS=16 ,RD=3};
 
 #ifdef BIT8
-	Gpio pinDataLow;
+	Gpio pinData;
 #else
 	Gpio pinDataLow;
 	Gpio pinDataHigh;
