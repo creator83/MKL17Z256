@@ -1,6 +1,8 @@
 #include "MKL17Z4.h"                    // Device header
 #include "uart.h"
+#include "tact.h"
 
+tact frq;
 
 int main ()
 {
