@@ -1,22 +1,80 @@
 #include "ili9325.h"
 
+#define BIT8
+
+
 #ifdef BIT8
 ili9325::ili9325()
 :pinData (Gpio::C), pinCommand (Gpio::C)
 {
-	pinCommand.setOutPin(CS);
-	pinCommand.setOutPin(RS);
-	pinCommand.setOutPin(RST);
-	pinCommand.setOutPin(RD);
-	pinCommand.setOutPin(WR);
-	pinCommand.setPin (RST);
-	pinCommand.setPin (CS);
-	pinCommand.clearPin (RS);
-	pinCommand.setPin (WR);	
-	pinCommand.setPin (RD);
+	pinCommand.setOutPort(1 << RST|1 << WR|1 << CS|1 << RS|1 << RD);
 
 	init();
 }
+
+void ili9325::index(uint16_t indx)
+{
+	//отправляем команду
+	pinCommand.clearPin(RS);
+	pinCommand.clearPin(CS);
+	pinData.clearValPort (1 << RST|1 << WR|1 << CS|1 << RS|1 << RD);
+	pinData.setValPort (indx >> 8);
+	pinCommand.clearPin(WR);
+	pinCommand.setPin(WR);
+	pinData.clearValPort (1 << RST|1 << WR|1 << CS|1 << RS|1 << RD);
+	pinData.setValPort (static_cast <uint8_t>(indx));
+	pinCommand.clearPin(WR);
+	pinCommand.setPin(WR);
+	pinCommand.setPin(CS);
+}
+
+void ili9325::data(uint16_t dta)
+{
+	//отправляем данные
+	pinCommand.setPin(RS);
+	pinCommand.clearPin(CS);
+	pinData.clearValPort (1 << RST|1 << WR|1 << CS|1 << RS|1 << RD);
+	pinData.setValPort (dta >> 8);
+	pinCommand.clearPin(WR);
+	pinCommand.setPin(WR);
+	pinData.clearValPort (1 << RST|1 << WR|1 << CS|1 << RS|1 << RD);
+	pinData.setValPort (static_cast <uint8_t>(dta));
+	pinCommand.clearPin(WR);
+	pinCommand.setPin(WR);
+	pinCommand.setPin(CS);
+}
+/*
+void ili9325::wr_reg (uint16_t indx , uint16_t dta)
+{
+	pinCommand.clearPin(CS);
+	pinCommand.clearPin(RS);
+	pinData.clearValPort (1 << RST|1 << WR|1 << CS|1 << RS|1 << RD);
+	pinData.setValPort (indx >> 8);
+	pinCommand.clearPin(WR);
+	pinCommand.setPin(WR);
+	pinData.clearValPort (1 << RST|1 << WR|1 << CS|1 << RS|1 << RD);
+	pinData.setValPort (static_cast <uint8_t>(indx));
+	pinCommand.clearPin(WR);
+	pinCommand.setPin(WR);
+	//отправляем данные
+	pinCommand.setPin(RS);
+	pinData.clearValPort (1 << RST|1 << WR|1 << CS|1 << RS|1 << RD);
+	pinData.setValPort (dta >> 8);
+	pinCommand.clearPin(WR);
+	pinCommand.setPin(WR);
+	pinData.clearValPort (1 << RST|1 << WR|1 << CS|1 << RS|1 << RD);
+	pinData.setValPort (static_cast <uint8_t>(dta));
+	pinCommand.clearPin(WR);
+	pinCommand.setPin(WR);
+	pinCommand.setPin(CS);
+}
+*/
+void ili9325::wr_reg (uint16_t indx , uint16_t dta)
+{
+	index(indx);
+	data(dta);
+}
+
 #else
 ili9325::ili9325()
 :pinDataLow (Gpio::D) , pinDataHigh (Gpio::C) , pinCommand (Gpio::B)

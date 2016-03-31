@@ -5,7 +5,7 @@
 #ifndef ILI9325_H
 #define ILI9325_H
 
-#define BIT8
+
 //registers
 
 const uint16_t DRIVER_OUTPUT_CONTROL_1 = 0x01;
@@ -107,14 +107,10 @@ public:
 	
 protected:
 private:
-	enum commPins {RST=18, WR=17 , CS=19 , RS=16 ,RD=3};
+	enum commPins {RST=4, WR=2 , CS=0 , RS=1 ,RD=3};
 
-#ifdef BIT8
+
 	Gpio pinData;
-#else
-	Gpio pinDataLow;
-	Gpio pinDataHigh;
-#endif
 	Gpio pinCommand;
 	unsigned int x_start, x_end, y_start, y_end;
 
@@ -127,14 +123,21 @@ public:
 	void set_cursor (uint16_t x , uint16_t y);
 	void data (uint16_t dta);	
 	void putchar (uint16_t x , uint16_t y , char * ch , uint16_t color , uint16_t background);
-
+	uint16_t device_code ();
+	uint16_t read_reg(uint16_t indx);
 protected:
 private:
 	void init ();
 	void index (uint16_t indx);
+	void init_bus_output ();
+	void init_bus_input ();
+
 
 	//void wr_reg (unsigned int indx , unsigned int dta);
-	void wr_reg (uint16_t indx , uint16_t dta);	
+	void wr_reg (uint16_t indx , uint16_t dta);
+	uint16_t read_data();
+
+
 
 }; //ili9325
 
