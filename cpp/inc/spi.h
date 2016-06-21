@@ -1,8 +1,17 @@
-#include "MKL17Z4.h"                 // Device header
+#include "MKL17Z4.h"              // Device header
 #include "gpio.h"
 
-#define SPI1_DR_8bit          (*(__IO uint8_t *)((uint32_t)&(SPI1->DR))) 
 
+/*
+ SPI0
+ Alt2
+ C: CS-4, SCK-5, MOSI-6, MISO-7
+ D: CS-0, SCK-1, MOSI-2, MISO-3
+ E: CS-16, SCK-17, MOSI-18, MISO-19
+ SPI1
+ D: CS-4, SCK-5, MOSI-6, MISO-7
+
+*/
 
 #ifndef SPI_H
 #define SPI_H
@@ -28,13 +37,14 @@ public:
   enum PORT {C,D,E};
   enum CS_MODE {CS_HARDWARE,CS_SOFTWARE};
 	
-	enum pin_def {CS, SCK , MISO , MOSI};
-	uint8_t port_;
-	uint8_t size_;
+  enum pin_def {CS, SCK , MISO , MOSI};
+  uint8_t port_;
+  uint8_t size_;
+  uint8_t nspi_;
 private:
   Gpio pin;
-	static PotMemFn ptr_receive[2];
-	static PotMemF ptr_transmite[2];
+  static PotMemFn ptr_receive[2];
+  static PotMemF ptr_transmite[2];
   static ptr_ex ptr_exchange[2];
 
 //functions
