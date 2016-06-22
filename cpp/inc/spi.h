@@ -37,7 +37,7 @@ public:
   enum PORT {C,D,E};
   enum CS_MODE {CS_HARDWARE,CS_SOFTWARE};
 	
-  enum pin_def {CS, SCK , MISO , MOSI};
+  enum pin_def {CS=4, SCK ,  MOSI, MISO};
   uint8_t port_;
   uint8_t size_;
   uint8_t nspi_;
@@ -49,7 +49,11 @@ private:
 
 //functions
 public:
-  spi(SPI_N spi_, PORT p, Division div, CS_MODE mode_= CS_HARDWARE, Cpol cpl = neg, Cpha cph = first, Role r = master, Size s=bit8);
+  //constructor for software mode
+  //spi(SPI_N spi_, PORT p, Division div, PORT_CS p_cs, uint8_t pin, Cpol cpl = neg, Cpha cph = first, Role r = master, Size s=bit8);
+  //constructor for hardware mode
+  //spi(SPI_N spi_, PORT p, Division div, Cpol cpl = neg, Cpha cph = first, Role r = master, Size s=bit8);
+  spi();
   void Set_CS ();
   void Clear_CS ();
   void transmit_8 (uint16_t data);
@@ -62,8 +66,13 @@ public:
   uint16_t exchange_8 (uint16_t data);
   uint16_t exchange_16 (uint16_t data);
   uint16_t exchange (uint16_t data);
+  bool flag_bsy ();
+  bool flag_sptef ();
+  bool flag_rxne ();
 private:
 };
+
+inline bool spi::flag_sptef (){return SPI0->S&SPI_S_SPTEF_MASK;}
 
 #endif
 
