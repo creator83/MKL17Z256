@@ -26,22 +26,20 @@ public:
   static uint8_t pins_d[2][4];
   enum Size {bit8, bit16};
   enum PORT {C,D,E};
-  enum CS_MODE {CS_HARDWARE,CS_SOFTWARE};
+
 	
-	enum pin_def {CS, SCK , MISO , MOSI};
-	uint8_t port_;
-	uint8_t size_;
+  enum pin_def {CS=4, SCK , MOSI, MISO};
+  uint8_t port_;
+  uint8_t size_;
 private:
-  Gpio pin;
-	static PotMemFn ptr_receive[2];
-	static PotMemF ptr_transmite[2];
+  gpio pin;
+  static PotMemFn ptr_receive[2];
+  static PotMemF ptr_transmite[2];
   static ptr_ex ptr_exchange[2];
 
 //functions
 public:
-  spi(SPI_N spi_, PORT p, Division div, CS_MODE mode_= CS_HARDWARE, Cpol cpl = neg, Cpha cph = first, Role r = master, Size s=bit8);
-  void Set_CS ();
-  void Clear_CS ();
+  spi();
   void transmit_8 (uint16_t data);
   void transmit_16 (uint16_t data);
   void transmit (uint16_t data);
@@ -52,6 +50,7 @@ public:
   uint16_t exchange_8 (uint16_t data);
   uint16_t exchange_16 (uint16_t data);
   uint16_t exchange (uint16_t data);
+
 private:
 };
 

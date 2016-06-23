@@ -31,12 +31,6 @@ int main()
 void spi0_init ()
 {
 
-	//Setting pin CS as digital out
-	//spi_pin.setOutPin(CS);
-
-	//
-	//spi_pin.setPin(CS);
-
 	//Settings pins SCK, MOSI, MISO as ALT2
 	spi_pin.setOutPort((1 << CS|1 << SCK|1 << MOSI|1 << MISO), gpio::Alt2);
 
@@ -53,7 +47,7 @@ void spi0_init ()
 
 void spi0_transmit (uint8_t data)
 {
-	while(!(SPI0->S & SPI_S_SPTEF_MASK ));
+	while(!(SPI0->S & SPI_S_SPTEF_MASK));
 	SPI0->DL = data;
 }
 
