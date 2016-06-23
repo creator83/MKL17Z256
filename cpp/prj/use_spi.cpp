@@ -17,6 +17,7 @@ void spi0_init ();
 
 int main()
 {
+	//TPM0->CONTROLS[0].CnSC = 0;
 	spi0_init ();
 
   while (1)
