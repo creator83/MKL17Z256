@@ -40,6 +40,7 @@ private:
 //functions
 public:
   spi();
+  spi(SPI_N n, PORT p, Division d_, Role r=master, Cpol cpol_=neg, Cpha cpha_=first, Size s=bit8 );
   void transmit_8 (uint16_t data);
   void transmit_16 (uint16_t data);
   void transmit (uint16_t data);
@@ -51,8 +52,23 @@ public:
   uint16_t exchange_16 (uint16_t data);
   uint16_t exchange (uint16_t data);
 
+  void put_data_dh (uint8_t data);
+  void put_data_dl (uint8_t data);
+  uint8_t get_data_dh ();
+  uint8_t get_data_dl ();
+  bool flag_sptef ();
+  bool flag_sprf ();
+
 private:
 };
+
+inline void spi::put_data_dh (uint8_t data){SPI0->DH = data;}
+inline void spi::put_data_dl (uint8_t data){SPI0->DL = data;}
+inline uint8_t spi::get_data_dh (){return SPI0->DH;}
+inline uint8_t spi::get_data_dl (){return SPI0->DL;}
+inline bool spi::flag_sptef (){return SPI0->S & SPI_S_SPTEF_MASK;}
+inline bool spi::flag_sprf (){return SPI0->S & SPI_S_SPRF_MASK;}
+
 
 #endif
 
