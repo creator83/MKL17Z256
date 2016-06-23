@@ -2,17 +2,17 @@
 
 
 uart::uart (baud b)
-:pin (Gpio::E)
+:pin (gpio::E)
 {
   SIM->SCGC4|= SIM_SCGC4_UART2_MASK;
   uint16_t sbr;
   
   //Settings TX
-  pin.setOutPin (TX , Gpio::Alt3);
+  pin.setOutPin (TX , gpio::Alt3);
   
   //Settings RX
   
-  pin.setOutPin (RX , Gpio::Alt3);
+  pin.setOutPin (RX , gpio::Alt3);
   
   
   //===Settings UART===//

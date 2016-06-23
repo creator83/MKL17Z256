@@ -7,7 +7,7 @@
 typedef unsigned int* reg;
 
 
-class Gpio
+class gpio
 {
 //variables
 public:
@@ -25,8 +25,8 @@ private:
 
 //functions
 public:
-  Gpio(Port p );
-  Gpio(uint8_t p );
+  gpio(Port p );
+  gpio(uint8_t p );
   void setOutPin (uint8_t pin, mode m = Alt1, dir d = Output);	
   void setPin (uint8_t pin);
   void clearPin (uint8_t pin);	

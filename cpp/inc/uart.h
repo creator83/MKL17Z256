@@ -15,7 +15,7 @@ class uart
 public:
   enum baud {baud9600 = 9600 , baud57600 = 57600 , baud115200 = 115200};
 private:
-  Gpio pin;
+  gpio pin;
   enum pin_def {TX = 16 , RX};
 //functions
 public:

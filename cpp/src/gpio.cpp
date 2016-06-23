@@ -1,52 +1,52 @@
 #include "gpio.h"
 
 
-GPIO_MemMapPtr Gpio::portAdr [5] = {PTA_BASE_PTR, PTB_BASE_PTR, PTC_BASE_PTR, PTD_BASE_PTR, PTE_BASE_PTR};
-PORT_MemMapPtr Gpio::portAdrSet [5] = {PORTA_BASE_PTR, PORTB_BASE_PTR, PORTC_BASE_PTR, PORTD_BASE_PTR, PORTE_BASE_PTR};
+GPIO_MemMapPtr gpio::portAdr [5] = {PTA_BASE_PTR, PTB_BASE_PTR, PTC_BASE_PTR, PTD_BASE_PTR, PTE_BASE_PTR};
+PORT_MemMapPtr gpio::portAdrSet [5] = {PORTA_BASE_PTR, PORTB_BASE_PTR, PORTC_BASE_PTR, PORTD_BASE_PTR, PORTE_BASE_PTR};
 
-Gpio::Gpio (Port p)
+gpio::gpio (Port p)
 {
   prt = p;
 //takt port
   SIM_SCGC5 |= (0x200 << p);
 }
 
-Gpio::Gpio(uint8_t p )
+gpio::gpio(uint8_t p )
 {
   prt = p;
 //takt port
   SIM_SCGC5 |= (0x200 << p);
 }
 
-void Gpio::setOutPin (uint8_t pin, mode m, dir d)
+void gpio::setOutPin (uint8_t pin, mode m, dir d)
 {
 	PORT_PCR_REG(portAdrSet[prt],pin) |= m << 8;
 	GPIO_PDDR_REG(portAdr[prt]) &= ~(1 << pin);
 	GPIO_PDDR_REG(portAdr[prt]) |= (d << pin);
 }
 
-void Gpio::setPin (uint8_t pin)
+void gpio::setPin (uint8_t pin)
 {
 	GPIO_PSOR_REG(portAdr[prt]) |= 1 << pin;
 }
 
-void Gpio::clearPin (uint8_t pin)
+void gpio::clearPin (uint8_t pin)
 {
 	GPIO_PCOR_REG(portAdr[prt]) |= (1 << pin);
 }
 
-void Gpio::ChangePinState (uint8_t pin)
+void gpio::ChangePinState (uint8_t pin)
 {
 	GPIO_PTOR_REG(portAdr[prt]) |= 1 << pin;
 }
 
-void Gpio::SetPinState (uint8_t pin , uint8_t state)
+void gpio::SetPinState (uint8_t pin , uint8_t state)
 {
   if (state)setPin (pin);
   else clearPin (pin);  
 }
 
-void Gpio::setOutPort (uint32_t value, mode m)
+void gpio::setOutPort (uint32_t value, mode m)
 {
 	union
 	{
@@ -62,17 +62,17 @@ void Gpio::setOutPort (uint32_t value, mode m)
 	}
 }
 
-void Gpio::setValPort (uint32_t value)
+void gpio::setValPort (uint32_t value)
 {
 	GPIO_PSOR_REG(portAdr[prt])  |= value;
 }
 
-void Gpio::clearValPort (uint32_t value)
+void gpio::clearValPort (uint32_t value)
 {
 	GPIO_PCOR_REG(portAdr[prt]) |= value;
 }
 
-bool Gpio::PinState (uint8_t pin)
+bool gpio::PinState (uint8_t pin)
 {
   return (GPIO_PDIR_REG(portAdr[prt])&(1 << pin));
 }
