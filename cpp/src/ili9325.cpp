@@ -95,6 +95,7 @@ ili9325::ili9325()
 
 void ili9325::index(uint16_t indx)
 {
+
 	//отправляем команду
 	pinCommand.clearPin(CS);
 	pinCommand.clearPin(RS);

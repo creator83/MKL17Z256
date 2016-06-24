@@ -1,17 +1,8 @@
-#include "MKL17Z4.h"              // Device header
+#include "MKL17Z4.h"                 // Device header
 #include "gpio.h"
 
+#define SPI1_DR_8bit          (*(__IO uint8_t *)((uint32_t)&(SPI1->DR))) 
 
-/*
- SPI0
- Alt2
- C: CS-4, SCK-5, MOSI-6, MISO-7
- D: CS-0, SCK-1, MOSI-2, MISO-3
- E: CS-16, SCK-17, MOSI-18, MISO-19
- SPI1
- D: CS-4, SCK-5, MOSI-6, MISO-7
-
-*/
 
 #ifndef SPI_H
 #define SPI_H
@@ -34,28 +25,24 @@ public:
   enum Cpha {first, second};
   static uint8_t pins_d[2][4];
   enum Size {bit8, bit16};
-  enum PORT {C,D,E};
-  enum CS_MODE {CS_HARDWARE,CS_SOFTWARE};
+  enum PORT {C=2,D,E};
+
 	
-  enum pin_def {CS=4, SCK ,  MOSI, MISO};
+  enum pin_def {CS=4, SCK , MOSI, MISO};
   uint8_t port_;
   uint8_t size_;
-  uint8_t nspi_;
+  uint8_t n_spi;
 private:
-  Gpio pin;
+  gpio pin;
   static PotMemFn ptr_receive[2];
   static PotMemF ptr_transmite[2];
   static ptr_ex ptr_exchange[2];
+  static SPI_MemMapPtr spiAdr [2];
 
 //functions
 public:
-  //constructor for software mode
-  //spi(SPI_N spi_, PORT p, Division div, PORT_CS p_cs, uint8_t pin, Cpol cpl = neg, Cpha cph = first, Role r = master, Size s=bit8);
-  //constructor for hardware mode
-  //spi(SPI_N spi_, PORT p, Division div, Cpol cpl = neg, Cpha cph = first, Role r = master, Size s=bit8);
   spi();
-  void Set_CS ();
-  void Clear_CS ();
+  spi(SPI_N n, PORT p, Division d_, Role r=master, Cpol cpol_=neg, Cpha cpha_=first, Size s=bit8 );
   void transmit_8 (uint16_t data);
   void transmit_16 (uint16_t data);
   void transmit (uint16_t data);
@@ -66,13 +53,18 @@ public:
   uint16_t exchange_8 (uint16_t data);
   uint16_t exchange_16 (uint16_t data);
   uint16_t exchange (uint16_t data);
-  bool flag_bsy ();
+
+  void put_data_dh (uint8_t data);
+  void put_data_dl (uint8_t data);
+  uint8_t get_data_dh ();
+  uint8_t get_data_dl ();
   bool flag_sptef ();
-  bool flag_rxne ();
+  bool flag_sprf ();
+
 private:
 };
 
-inline bool spi::flag_sptef (){return SPI0->S&SPI_S_SPTEF_MASK;}
+
 
 #endif
 
