@@ -9,7 +9,7 @@ char segled::numberdp [11] = {0xBF ,0x86 ,0xDB , 0xCF , 0xE6 , 0xED , 0xFD , 0x8
 char segled::pins[4] = {first, second, third, fourth};
 
 segled::segled (Port dig)
-:pin_digit (dig)
+:pin_digit (dig), shift_reg (spi::div32)
 {
 	//===Settings digit pins===//
 	pin_digit.setOutPin (first);
@@ -20,7 +20,7 @@ segled::segled (Port dig)
 
 void segled::segment (uint8_t val)
 {
-	spi0.transmit_8 (val);
+	shift_reg.transmit_8 (val);
 }
 
 void segled::OFF ()

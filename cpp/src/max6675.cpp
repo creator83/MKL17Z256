@@ -3,7 +3,7 @@
 char max6675::number [10] = {'0','1','2','3','4','5','6','7','8','9'};
 
 max6675::max6675 ()
-:spi1(spi::SPI_1, spi::D, spi::div32, spi::master, spi::neg, spi::second, spi::bit16)
+:spi_ics(spi::SPI_1, spi::D, spi::div32, spi::neg, spi::second, spi::bit16)
 {
 }
 
@@ -14,13 +14,15 @@ uint16_t max6675::readCelsius()
 		uint16_t full_val;
 		uint8_t half_val[2];
 	}val;
-	while (!spi1.flag_sptef());
-	spi1.put_data_dl (0x00);
-	spi1.put_data_dh (0x00);
-	while (!spi1.flag_sprf());
-	val.half_val[0] = spi1.get_data_dl();
-	val.half_val[1] = spi1.get_data_dh();
-	  if (val.full_val & 0x4) {
+	while (!spi_ics.flag_sptef());
+	spi_ics.put_data_dl (0x00);
+	spi_ics.put_data_dh (0x00);
+	while (!spi_ics.flag_sprf());
+	val.half_val[0] = spi_ics.get_data_dl();
+	val.half_val[1] = spi_ics.get_data_dh();
+
+	if (val.full_val & 0x4)
+	  {
     // uh oh, no thermocouple attached!
     return 0; 
     //return -100;
