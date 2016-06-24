@@ -14,7 +14,7 @@ public:
 	char buffer_value[2];
 	static char number [10];
 private:
-  spi spi1;
+  spi spi_ics;
 	
 
 //functions

@@ -50,7 +50,7 @@ void tact::init_LIRC_8 (uint8_t i)
 	/* OSC0->CR: ERCLKEN=0,EREFSTEN=0,SC2P=0,SC4P=0,SC8P=0,SC16P=0 */
 	OSC0->CR = (uint32_t)0x00u;         /* Disable External reference */
 	/* MCG->C2: RANGE0=0,HGO0=0,EREFS0=0,IRCS=1 */
-	MCG->C2 	= MCG_C2_IRCS_MASK;         /* Not used - leave default value */
+	//MCG->C2 	= MCG_C2_IRCS_MASK;         /* Not used - leave default value */
 	/* Switch to HIRC Mode */
 	/* MCG->C1: CLKS=0,IRCLKEN=1,IREFSTEN=0 */
 	MCG->C1 = MCG_C1_CLKS(0x00) |

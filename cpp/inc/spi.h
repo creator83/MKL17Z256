@@ -1,8 +1,16 @@
 #include "MKL17Z4.h"                 // Device header
 #include "gpio.h"
 
-#define SPI1_DR_8bit          (*(__IO uint8_t *)((uint32_t)&(SPI1->DR))) 
 
+/*
+ SPI0
+ C: CS-4, SCK-5, MOSI-6,MISO-7
+ D: CS-0, SCK-1, MOSI-2,MISO-3
+ E: CS-16, SCK-17, MOSI-18,MISO-19
+
+ SPI1
+ D:CS-4, SCK-5, MOSI-6,MISO-7
+*/
 
 #ifndef SPI_H
 #define SPI_H
@@ -23,15 +31,19 @@ public:
   enum Role {slave , master};
   enum Cpol {neg, pos};
   enum Cpha {first, second};
-  static uint8_t pins_d[2][4];
+  static uint8_t pins_d[3][4];
   enum Size {bit8, bit16};
   enum PORT {C=2,D,E};
 
 	
-  enum pin_def {CS=4, SCK , MOSI, MISO};
+  enum pin_def {CS, SCK , MOSI, MISO};
   uint8_t port_;
   uint8_t size_;
   uint8_t n_spi;
+<<<<<<< HEAD
+=======
+  uint8_t pins_;
+>>>>>>> f421c2740bb825a19a056ba5c013110c8570a68d
 private:
   gpio pin;
   static PotMemFn ptr_receive[2];
@@ -41,8 +53,9 @@ private:
 
 //functions
 public:
-  spi();
-  spi(SPI_N n, PORT p, Division d_, Role r=master, Cpol cpol_=neg, Cpha cpha_=first, Size s=bit8 );
+  spi(Division d_, Cpol cpol_=neg, Cpha cpha_=first, Size s=bit8, Role r=master);
+  spi(SPI_N n, PORT p, Division d_, Cpol cpol_=neg, Cpha cpha_=first, Size s=bit8, Role r=master );
+
   void transmit_8 (uint16_t data);
   void transmit_16 (uint16_t data);
   void transmit (uint16_t data);

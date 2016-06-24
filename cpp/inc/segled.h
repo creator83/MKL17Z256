@@ -27,7 +27,7 @@ public:
 	char buffer [4];
 private:
 	#ifdef USE_SPI
-	spi spi0;
+	spi shift_reg;
 	static char pins [4];
 	#else
 	Gpio pin_segment;
