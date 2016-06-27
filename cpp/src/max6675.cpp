@@ -3,7 +3,7 @@
 char max6675::number [10] = {'0','1','2','3','4','5','6','7','8','9'};
 
 max6675::max6675 ()
-:spi_ics(spi::SPI_1, spi::D, spi::div32, spi::neg, spi::second, spi::bit16)
+:spi_ics(spi::D, spi::div16, spi::neg, spi::second, spi::bit16)
 {
 }
 
@@ -27,7 +27,7 @@ uint16_t max6675::readCelsius()
     return 0; 
     //return -100;
   }
-	//val.full_val *=10;
+	val.full_val *=10;
 	val.full_val>>=5;
 	return val.full_val;
 }

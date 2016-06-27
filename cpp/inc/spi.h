@@ -8,6 +8,7 @@
  D: CS-0, SCK-1, MOSI-2,MISO-3
  E: CS-16, SCK-17, MOSI-18,MISO-19
 
+
  SPI1
  D:CS-4, SCK-5, MOSI-6,MISO-7
 */
@@ -40,10 +41,7 @@ public:
   uint8_t port_;
   uint8_t size_;
   uint8_t n_spi;
-<<<<<<< HEAD
-=======
   uint8_t pins_;
->>>>>>> f421c2740bb825a19a056ba5c013110c8570a68d
 private:
   gpio pin;
   static PotMemFn ptr_receive[2];
@@ -53,8 +51,11 @@ private:
 
 //functions
 public:
+  //constructor for SPI1
   spi(Division d_, Cpol cpol_=neg, Cpha cpha_=first, Size s=bit8, Role r=master);
-  spi(SPI_N n, PORT p, Division d_, Cpol cpol_=neg, Cpha cpha_=first, Size s=bit8, Role r=master );
+
+  //constructor for SPI0
+  spi(PORT p, Division d_, Cpol cpol_=neg, Cpha cpha_=first, Size s=bit8, Role r=master );
 
   void transmit_8 (uint16_t data);
   void transmit_16 (uint16_t data);

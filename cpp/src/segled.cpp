@@ -37,6 +37,7 @@ void segled::frame (uint8_t dig)
 	pin_digit.clearPin (first);
 	pin_digit.clearPin (second);
 	pin_digit.clearPin (third);
+	pin_digit.clearPin (fourth);
 	if (dig==1)segment (numberdp[buffer[dig]]);
 	else segment (number[buffer[dig]]);
 	pin_digit.setPin (pins[dig]);

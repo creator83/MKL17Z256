@@ -19,7 +19,7 @@ spi::spi(Division d_, Cpol cpol_, Cpha cpha_, Size s, Role r)
   //Settings pins SCK, MOSI, MISO as ALT2
   	pin.setOutPort((1 << 4|1 << 5|1 << 6|1 << 7), gpio::Alt2);
   
-  
+  	n_spi = 1;
   //Turn on tacting SPI1
   SIM->SCGC4 |= SIM_SCGC4_SPI1_MASK;
 
@@ -32,7 +32,7 @@ spi::spi(Division d_, Cpol cpol_, Cpha cpha_, Size s, Role r)
   	 SPI_C1_REG(SPI1) |= (r << SPI_C1_MSTR_SHIFT|cpol_ << SPI_C1_CPOL_SHIFT |cpha_ << SPI_C1_CPHA_SHIFT|SPI_C1_SSOE_MASK | SPI_C1_SPE_MASK);
 }
 
-spi::spi(SPI_N n, PORT p, Division d_,  Cpol cpol_, Cpha cpha_, Size s, Role r)
+spi::spi(PORT p, Division d_,  Cpol cpol_, Cpha cpha_, Size s, Role r)
 :pin (p)
 {
 	pins_ = p-2;
@@ -42,15 +42,15 @@ spi::spi(SPI_N n, PORT p, Division d_,  Cpol cpol_, Cpha cpha_, Size s, Role r)
 
 	//===Settings SPI===//
 	//Turn on tacting SPI0
-	SIM->SCGC4 |= 1 << n;
-	n_spi = n >> SIM_SCGC4_SPI0_SHIFT;
+	SIM->SCGC4 |= SIM_SCGC4_SPI0_MASK;
+	n_spi = 0;
 	//Settings division
-	 SPI_S_REG(spiAdr[n_spi]) = 0x00;
+	 SPI_S_REG(SPI0) = 0x00;
 
-	 SPI_BR_REG(spiAdr[n_spi]) = SPI_BR_SPR(d_);
-	 SPI_C2_REG(spiAdr[n_spi]) |= SPI_C2_MODFEN_MASK|(s<<SPI_C2_SPIMODE_SHIFT);
-	 SPI_C1_REG(spiAdr[n_spi]) &= ~(SPI_C1_MSTR_MASK |SPI_C1_CPHA_MASK|SPI_C1_CPOL_MASK);
-	 SPI_C1_REG(spiAdr[n_spi]) |= (r << SPI_C1_MSTR_SHIFT|cpol_ << SPI_C1_CPOL_SHIFT |cpha_ << SPI_C1_CPHA_SHIFT|SPI_C1_SSOE_MASK | SPI_C1_SPE_MASK);
+	 SPI_BR_REG(SPI0) = SPI_BR_SPR(d_);
+	 SPI_C2_REG(SPI0) |= SPI_C2_MODFEN_MASK|(s<<SPI_C2_SPIMODE_SHIFT);
+	 SPI_C1_REG(SPI0) &= ~(SPI_C1_MSTR_MASK |SPI_C1_CPHA_MASK|SPI_C1_CPOL_MASK);
+	 SPI_C1_REG(SPI0) |= (r << SPI_C1_MSTR_SHIFT|cpol_ << SPI_C1_CPOL_SHIFT |cpha_ << SPI_C1_CPHA_SHIFT|SPI_C1_SSOE_MASK | SPI_C1_SPE_MASK);
 }
 
 
