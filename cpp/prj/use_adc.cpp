@@ -12,9 +12,10 @@ gpio D(gpio::D);
 pit del(pit::ch0, 1, pit::ms);
 segled indicator(segled::B);
 const char adc_ch = 4;
+uint16_t calibr;
 
 
-void init_adc ();
+bool init_adc ();
 uint16_t conv_adc(uint8_t pin);
 
 struct flags
@@ -44,7 +45,6 @@ uint16_t result [4];
 
 int main()
 {
-	uint16_t abs_result;
 	D.setOutPin(led);
 	init_adc ();
 
@@ -56,7 +56,7 @@ int main()
 	}
 }
 
-void init_adc ()
+bool init_adc ()
 {
 	//tact ADC0
 	SIM->SCGC6 |= SIM_SCGC6_ADC0_MASK;
@@ -68,8 +68,11 @@ void init_adc ()
 	ADC0->SC2 &= ~ ADC_SC2_ADTRG_MASK;
 	ADC0->SC3 |= ADC_SC3_CAL_MASK ;
 	while (!(ADC0->SC1[0]&ADC_SC1_COCO_MASK));
-
+	if (ADC0->SC3&ADC_SC3_CALF_MASK) return false;
+	calibr = ADC0->CLP0+ADC0->CLP1+ADC0->CLP2+ADC0->CLP3+ADC0->CLP4+ADC0->CLPS;
+	calibr >>=1;
 	ADC0->CFG1|= ADC_CFG1_ADLSMP_MASK|ADC_CFG1_MODE(0);
+	return true;
 
 }
 

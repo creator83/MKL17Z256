@@ -4,6 +4,12 @@
 GPIO_MemMapPtr gpio::portAdr [5] = {PTA_BASE_PTR, PTB_BASE_PTR, PTC_BASE_PTR, PTD_BASE_PTR, PTE_BASE_PTR};
 PORT_MemMapPtr gpio::portAdrSet [5] = {PORTA_BASE_PTR, PORTB_BASE_PTR, PORTC_BASE_PTR, PORTD_BASE_PTR, PORTE_BASE_PTR};
 
+
+gpio::gpio()
+{
+
+}
+
 gpio::gpio (Port p)
 {
   prt = p;
@@ -18,11 +24,24 @@ gpio::gpio(uint8_t p )
   SIM_SCGC5 |= (0x200 << p);
 }
 
+
+void gpio::setPort (uint8_t p)
+{
+	prt = p;
+	//takt port
+	SIM_SCGC5 |= (0x200 << p);
+}
+
 void gpio::setOutPin (uint8_t pin, mode m, dir d)
 {
 	PORT_PCR_REG(portAdrSet[prt],pin) |= m << 8;
 	GPIO_PDDR_REG(portAdr[prt]) &= ~(1 << pin);
 	GPIO_PDDR_REG(portAdr[prt]) |= (d << pin);
+}
+
+void gpio::setOutPin (uint8_t pin, uint8_t m)
+{
+	PORT_PCR_REG(portAdrSet[prt],pin) |= m << 8;
 }
 
 void gpio::setPin (uint8_t pin)
