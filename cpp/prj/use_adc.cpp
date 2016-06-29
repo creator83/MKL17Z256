@@ -8,10 +8,10 @@
 
 tact frq;
 const char led = 0;
-gpio D(gpio::D);
+gpio E(gpio::E);
 pit del(pit::ch0, 1, pit::ms);
 segled indicator(segled::B);
-const char adc_ch = 4;
+const char adc_ch = 1;
 uint16_t calibr;
 
 
@@ -45,7 +45,6 @@ uint16_t result [4];
 
 int main()
 {
-	D.setOutPin(led);
 	init_adc ();
 
 
@@ -71,7 +70,7 @@ bool init_adc ()
 	if (ADC0->SC3&ADC_SC3_CALF_MASK) return false;
 	calibr = ADC0->CLP0+ADC0->CLP1+ADC0->CLP2+ADC0->CLP3+ADC0->CLP4+ADC0->CLPS;
 	calibr >>=1;
-	ADC0->CFG1|= ADC_CFG1_ADLSMP_MASK|ADC_CFG1_MODE(0);
+	ADC0->CFG1|= ADC_CFG1_ADLSMP_MASK|ADC_CFG1_MODE(1);
 	return true;
 
 }
@@ -79,8 +78,9 @@ bool init_adc ()
 uint16_t conv_adc(uint8_t pin)
 {
 	//Select 4 channal and start conversation
-	ADC0->SC1[0] |= ADC_SC1_ADCH(pin);
+	ADC0->SC1[0] = ADC_SC1_ADCH(pin);
 	while (!(ADC0->SC1[0]&ADC_SC1_COCO_MASK));
-	uint16_t result = ADC0->R[0];
+	uint16_t temp = ADC0->R[0];
+	uint32_t result = (temp*33)/0xFFF;
 	return result;
 }

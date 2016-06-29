@@ -47,18 +47,18 @@ int main()
 
 	while (1)
 	{
-		for (uint8_t i=0;i<8;++i)
+		for (uint8_t i=0;i<4;++i)
 		{
 			result [i]=sensor.readCelsius();
-			delay_ms(100);
+			delay_ms(200);
 		}
 		abs_result=0;
-		for (uint8_t i=0;i<8;++i)
+		for (uint8_t i=0;i<4;++i)
 		{
 			abs_result += result [i];
 		}
-		abs_result >>=3;
+		abs_result >>=2;
 		indicator.get_buffer (abs_result);
-		delay_ms(200);
+		//delay_ms(250);
 	}
 }
