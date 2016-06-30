@@ -5,6 +5,7 @@
 #include "tact.h"
 #include "segled.h"
 #include "max6675.h"
+#include "adc.h"
 
 tact frq;
 const char led = 0;
@@ -45,12 +46,14 @@ uint16_t result [4];
 
 int main()
 {
-	init_adc ();
+	//init_adc ();
 
+	adc t_couple (adc::SE0, adc::bit16);
 
 	while (1)
 	{
-		indicator.get_buffer (conv_adc(adc_ch));
+		indicator.get_buffer (t_couple.convert());
+		//indicator.get_buffer (conv_adc(adc_ch));
 		delay_ms(200);
 	}
 }
