@@ -13,8 +13,7 @@ pit del(pit::ch0, 1, pit::ms);
 segled indicator(segled::B);
 
 
-
-struct flags
+struct
 {
 	unsigned led_indicator_delay : 1;
 }flag;
