@@ -70,7 +70,7 @@ bool init_adc ()
 	if (ADC0->SC3&ADC_SC3_CALF_MASK) return false;
 	calibr = ADC0->CLP0+ADC0->CLP1+ADC0->CLP2+ADC0->CLP3+ADC0->CLP4+ADC0->CLPS;
 	calibr >>=1;
-	ADC0->CFG1|= ADC_CFG1_ADLSMP_MASK|ADC_CFG1_MODE(1);
+	ADC0->CFG1|= ADC_CFG1_ADLSMP_MASK|ADC_CFG1_MODE(2);
 	return true;
 
 }
@@ -80,7 +80,5 @@ uint16_t conv_adc(uint8_t pin)
 	//Select 4 channal and start conversation
 	ADC0->SC1[0] = ADC_SC1_ADCH(pin);
 	while (!(ADC0->SC1[0]&ADC_SC1_COCO_MASK));
-	uint16_t temp = ADC0->R[0];
-	uint32_t result = (temp*33)/0xFFF;
-	return result;
+	return ADC0->R[0];
 }
