@@ -4,7 +4,7 @@
 #define TACT_H
 
 
-class tact
+class Tact
 {
   //variables
 public:
@@ -12,17 +12,17 @@ public:
   enum divider {div1, div2, div4, div8, div16, div32, div64, div128};
 
  private:
-  static uint8_t cpu_clock;
-  static uint8_t bus_clock;
-  static uint8_t mcgir_clock;
+  static uint16_t cpuClock;
+  static uint16_t busClock;
+  static uint16_t mcgirClock;
   uint8_t src;
   //functions
 public:
-  tact ();
-  tact (mode m, uint8_t frq);
-  static uint8_t & get_frq_cpu (){return cpu_clock;};
-  static uint8_t & get_frq_bus (){return bus_clock;};
-  static uint8_t & get_frq_mcgir (){return mcgir_clock;};
+  Tact ();
+  Tact (mode m, uint8_t frq);
+  static uint16_t & get_frq_cpu (){return cpuClock;};
+  static uint16_t & get_frq_bus (){return busClock;};
+  static uint16_t & get_frq_mcgir (){return mcgirClock;};
   void get_LIRC_8 (divider div_1=div1, divider div_2=div1);
 
   void get_LIRC_2 (divider div_1=div1, divider div_2=div1);
@@ -31,7 +31,7 @@ public:
 
 private:
 
-  void init_HIRC ();
+  void initHIRC ();
 
   //===ext_OSC===//
 

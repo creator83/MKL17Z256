@@ -1,6 +1,5 @@
 #include "MKL17Z4.h"                 // Device header
-#include "gpio.h"
-
+#include "dma.h"
 
 /*
  SPI0
@@ -16,64 +15,66 @@
 #ifndef SPI_H
 #define SPI_H
 
-class spi;
+class Spi;
 
-typedef uint16_t(spi::*PotMemFn)() ;
-typedef uint16_t(spi::*ptr_ex)(uint16_t) ;
+typedef uint16_t(Spi::*PotMemFn)() ;
+typedef uint16_t(Spi::*ptr_ex)(uint16_t) ;
 
-typedef void(spi::*PotMemF)(uint16_t) ;
+typedef void(Spi::*PotMemF)(uint16_t);
 
-class spi
+class Spi
 {
 //variables
 public:
-  enum Division {div2 , div4 , div8 , div16 , div32 , div64 , div128 , div256, div512};
-  enum SPI_N {SPI_0 = 22, SPI_1};
-  enum Role {slave , master};
-  enum Cpol {neg, pos};
-  enum Cpha {first, second};
-  static uint8_t pins_d[3][4];
-  enum Size {bit8, bit16};
-  enum PORT {C=2,D,E};
+  enum class Division {div2 , div4 , div8 , div16 , div32 , div64 , div128 , div256, div512};
+  enum class SPI_N {SPI_0, SPI_1};
+  enum class Role {slave , master};
+  enum class Cpol {neg, pos};
+  enum class Cpha {first, second};
+  enum class Size {bit8, bit16};
+  enum class Mode {software, hardware};
+  enum class dma {transmit=5, receive=2};
 
-	
-  enum pin_def {CS, SCK , MOSI, MISO};
-  uint8_t port_;
+
+protected:
   uint8_t size_;
+  uint8_t cpol_;
+  uint8_t cpha_;
+  uint8_t role_;
+  uint8_t div_;
   uint8_t n_spi;
-  uint8_t pins_;
+  uint8_t mode_;
+
 private:
-  gpio pin;
+
   static PotMemFn ptr_receive[2];
   static PotMemF ptr_transmite[2];
   static ptr_ex ptr_exchange[2];
   static SPI_MemMapPtr spiAdr [2];
+  Dma * driverDma;
 
 //functions
 public:
-  //constructor for SPI1
-  spi(Division d_, Cpol cpol_=neg, Cpha cpha_=first, Size s=bit8, Role r=master);
+  Spi(SPI_N, Division d_, Cpol cpol_=Cpol::neg, Cpha cpha_=Cpha::first, Size s=Size::bit8, Mode m= Mode::hardware, Role r=Role::master);
 
-  //constructor for SPI0
-  spi(PORT p, Division d_, Cpol cpol_=neg, Cpha cpha_=first, Size s=bit8, Role r=master );
-
-  void transmit_8 (uint16_t data);
-  void transmit_16 (uint16_t data);
-  void transmit (uint16_t data);
-  uint16_t receive_8 ();
-  uint16_t receive_16 ();
-  uint16_t receive ();
-
-  uint16_t exchange_8 (uint16_t data);
-  uint16_t exchange_16 (uint16_t data);
-  uint16_t exchange (uint16_t data);
-
-  void put_data_dh (uint8_t data);
-  void put_data_dl (uint8_t data);
-  uint8_t get_data_dh ();
-  uint8_t get_data_dl ();
-  bool flag_sptef ();
-  bool flag_sprf ();
+  Spi(SPI_N, Role r=Role::master );
+  void start ();
+  void stop ();
+  void setCpol (Cpol);
+  void setCpha (Cpha);
+  void setDivision (Division);
+  void setFrameSize (Size);
+  void setMode (Mode);
+  void setDma (Dma &);
+  void enableDma (dma);
+  void disableDma (dma);
+  void putDataDh (uint8_t data);
+  void putDataDl (uint8_t data);
+  uint8_t getDataDh ();
+  uint8_t getDataDl ();
+  bool flagSptef ();
+  bool flagSprf ();
+  SPI_MemMapPtr & getSpiPtr ();
 
 private:
 };
