@@ -1,4 +1,4 @@
-#include "MKL26Z4.h"            // Device header
+#include "MKL17Z4.h"            // Device header
 
 
 #ifndef GPIO_H
@@ -18,7 +18,7 @@ public:
 
 protected:
   static PORT_MemMapPtr PortBase [5];
-  static FGPIO_MemMapPtr GpioBase [5];
+  static GPIO_MemMapPtr GpioBase [5];
   uint8_t prt;
 private:
 

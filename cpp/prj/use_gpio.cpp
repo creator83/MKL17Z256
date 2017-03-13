@@ -7,7 +7,7 @@ Tact frq;
 
 int main ()
 {
-	Pin pins (Gpio::A, 0);
+	Pin pins (Gpio::E, 1);
 	while (1)
 	{
 		pins.togle();

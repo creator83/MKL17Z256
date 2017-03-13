@@ -21,7 +21,7 @@ public:
   Tact ();
   Tact (mode m, uint8_t frq);
   static uint16_t & get_frq_cpu (){return cpuClock;};
-  static uint16_t & get_frq_bus (){return busClock;};
+  static uint16_t & getFrqBus (){return busClock;};
   static uint16_t & get_frq_mcgir (){return mcgirClock;};
   void get_LIRC_8 (divider div_1=div1, divider div_2=div1);
 
