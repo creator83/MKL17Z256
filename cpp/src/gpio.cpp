@@ -16,23 +16,7 @@ Gpio::Gpio (Port p)
   SIM->SCGC5 |= (0x200 << prt);
 }
 
-void Gpio::setPort (Port p)
-{
-	prt = static_cast <uint8_t> (p);
-	//takt port
-	SIM->SCGC5 |= (0x200 << prt);
-}
 
-
-void Gpio::setValPort (uint32_t value)
-{
-	GPIO_PSOR_REG(GpioBase[prt])  |= value;
-}
-
-void Gpio::clearValPort (uint32_t value)
-{
-	GPIO_PCOR_REG(GpioBase[prt])  |= value;
-}
 
 
 
