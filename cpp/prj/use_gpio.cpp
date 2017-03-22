@@ -2,15 +2,16 @@
 #include "pin.h"
 #include "delay.h"
 #include "mcglight.h"
-
+#include "ili9341.h"
 Tact frq;
 
 int main ()
 {
-	Pin pins (Gpio::E, 1);
+	Pin light (Gpio::C, 3);
+	light.set();
+
 	while (1)
 	{
-		pins.togle();
-		delay_ms(1000);
+
 	}
 }

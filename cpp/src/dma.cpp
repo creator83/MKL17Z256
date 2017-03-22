@@ -38,7 +38,7 @@ void Dma::setDestination (uint32_t  ptr)
 	DMA_DAR(ch) = ptr;
 }
 
-void Dma::setLength (uint16_t length)
+void Dma::setLength (uint32_t length)
 {
 	DMA0->DMA[ch].DSR_BCR |= DMA_DSR_BCR_BCR(length);
 }

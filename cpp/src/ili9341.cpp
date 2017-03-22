@@ -3,16 +3,16 @@
 Ili9341::Ili9341(Spi &d, Gpio::Port po, uint8_t p, Gpio::Port rstpo, uint8_t rstpi)
 :dc (po, p), rst (rstpo, rstpi)
 {
+	//PORTD->PCR[7] |= (1 << 2|1 << 6);
 	driver = &d;
 	driver->setCpol(Spi::Cpol::neg);
 	driver->setCpha(Spi::Cpha::first);
 	driver->setDivision(Spi::Division::div128);
 	driver->setFrameSize(Spi::Size::bit8);
 	driver->setMode(Spi::Mode::hardware);
-	//PTE->PSOR |= 1 << 16;
 	driver->start();
 	init ();
-	//driver->setDivision(Spi::Division::div256);
+	driver->setDivision(Spi::Division::div2);
 }
 
 void Ili9341::setDma (Dma &d)
@@ -21,32 +21,20 @@ void Ili9341::setDma (Dma &d)
 	dma->setDsize(Dma::size::bit16);
 	dma->setSsize(Dma::size::bit16);
 	dma->setDestination((uint32_t)&driver->getSpiPtr()->DL);
-	//dma->enableDmaMux()
-	driver->setDma(d);
+	dma->enableDmaMux(Dma::dmaMux::spi1Tx);
+	//driver->setDma(d);
+	dma->setIncDestination(false);
+	DMA0->DMA[dma->getChannel()].DCR |= DMA_DCR_CS_MASK;
 }
 
 void Ili9341::fillScreen (uint16_t color)
 {
-
-	/*command (ili9341Commands::memoryWrite);
-	driver->setFrameSize(Spi::Size::bit16);
-	dma->setIncSource(false);
-	dataDma (&color, 76800);
-	driver->setFrameSize(Spi::Size::bit8);*/
-
-	/*unsigned int n, i, j;
-		i = color >> 8;
-		j = color & 0xFF;*/
-
-		setColoumn(10, 100);
-		setPage (10, 100);
-
-
+		setColoumn(0, 319);
+		setPage (0, 239);
 		command(ili9341Commands::memoryWrite);
 		driver->setFrameSize(Spi::Size::bit16);
 		dc.set();
-		while (!dc.state());
-		for (uint32_t n = 0; n < 8000; n++) {
+		for (uint32_t n = 0; n < 76800; n++) {
 			while (!driver->flagSptef());
 			driver->putDataDh(color>>8);
 			driver->putDataDl(color);
@@ -54,12 +42,24 @@ void Ili9341::fillScreen (uint16_t color)
 		driver->setFrameSize(Spi::Size::bit8);
 }
 
+void Ili9341::fillScreenDma (const uint16_t * color)
+{
+	setColoumn(0, 319);
+	setPage (0, 239);
+	command(ili9341Commands::memoryWrite);
+	driver->setFrameSize(Spi::Size::bit16);
+	dc.set();
+	dma->setIncSource(false);
+	dataDma (color, 153600);
+	driver->setFrameSize(Spi::Size::bit8);
+}
+
 void Ili9341::setCursor (uint16_t x , uint16_t y)
 {
 
 }
 
-void Ili9341::setCursor (uint16_t x1 , uint16_t y1, uint16_t x2, uint16_t y2)
+void Ili9341::setArea (uint16_t x1 , uint16_t y1, uint16_t x2, uint16_t y2)
 {
 	command(ILI9341_COLUMN_ADDR);
 	data(x1 >> 8);
@@ -78,14 +78,10 @@ void Ili9341::setCursor (uint16_t x1 , uint16_t y1, uint16_t x2, uint16_t y2)
 void Ili9341::data (uint8_t dta)
 {
 	dc.set();
-	while (!dc.state());
-	//FGPIOE->PSOR |= 1 << 20;
-	//PTE->PCOR |= 1 << 16;
-	//asm ("NOP");
 	while (!driver->flagSptef());
 	driver->putDataDl(dta);
 	while (!driver->flagSprf());
-	//PTE->PSOR |= 1 << 16;
+	uint8_t temp = driver->getDataDl();
 }
 
 
@@ -100,13 +96,17 @@ void Ili9341::data16 (uint16_t dta)
 	//PTE->PSOR |= 1 << 16;
 }
 
-void Ili9341::dataDma (uint16_t * buf, uint32_t n)
+void Ili9341::dataDma (const uint16_t * buf, uint32_t n)
 {
-	dma->setSource((uint32_t)buf);
+	dma->setSource((uint32_t )buf);
 	dma->setLength(n);
+	DMA0->DMA[dma->getChannel()].DCR |= DMA_DCR_ERQ_MASK;
 	driver->enableDma(Spi::dma::transmit);
 	while (!dma->flagDone());
+	DMA0->DMA[dma->getChannel()].DCR &= ~ DMA_DCR_ERQ_MASK;
 	dma->clearFlags();
+
+
 	driver->disableDma(Spi::dma::transmit);
 }
 
@@ -114,13 +114,11 @@ void Ili9341::dataDma (uint16_t * buf, uint32_t n)
 void Ili9341::command (uint8_t com)
 {
 	dc.clear();
-	//PTE->PCOR |= 1 << 16;
-	//asm ("NOP");
-	while (dc.state());
+	//while (dc.state());
 	while (!driver->flagSptef());
 	driver->putDataDl(com);
 	while (!driver->flagSprf());
-	//PTE->PSOR |= 1 << 16;
+	uint8_t temp = driver->getDataDl();
 }
 
 void Ili9341::init ()
@@ -132,8 +130,8 @@ void Ili9341::init ()
 	rst.set();
 	delay_ms(150);
 
-	//command (ili9341Commands::softwareReset);
-	//delay_ms(1000);
+	/*command (ili9341Commands::softwareReset);
+	delay_ms(1000);*/
 	command (ili9341Commands::powerControl1);
 	data(0x25);
 
@@ -203,5 +201,108 @@ void Ili9341::pixel (const uint16_t color)
 	driver->setFrameSize(Spi::Size::bit16);
 	data16 (color);
 	driver->setFrameSize(Spi::Size::bit8);
+}
+
+void Ili9341::symbol (uint16_t x, uint16_t y, const uint16_t color, const uint16_t fon, const uint8_t ch, Font & s)
+{
+	uint16_t colors [2] = {fon, color};
+	uint8_t byte = s.getWidth()>>3;
+	uint8_t pix = s.getWidth()%8;
+	uint16_t num, lArea;
+
+	if (pix){
+		num = (ch-s.getShift())*(byte+1)*s.getHeight();
+	}
+	else num = (ch-s.getShift())*byte*s.getHeight();
+
+	const uint8_t * ptrFont = s.getFont(num);
+
+	lArea = s.getWidth()*s.getHeight();
+
+	uint16_t arrSymbol [lArea];
+	uint16_t * arr=arrSymbol;
+
+	for (uint8_t i=0;i<s.getHeight();++i)
+	{
+		for (uint8_t j=0;j<byte;++j)
+		{
+			for (int8_t k=7;k>=0;--k)
+			{
+				bool temp = (*ptrFont)&(1 << k);
+				*arr++ = colors [temp];
+			}
+			++ptrFont;
+		}
+		for (int8_t k=7, j=0;j<pix;--k, ++j)
+		{
+			bool temp = (*ptrFont)&(1 << k);
+			*arr++ = colors [temp];
+		}
+		if (pix) ++ptrFont;
+	}
+
+	setArea(x, y, x+s.getWidth()-1, y+s.getHeight()-1);
+
+	command(ili9341Commands::memoryWrite);
+	driver->setFrameSize(Spi::Size::bit16);
+	dc.set();
+	dma->setIncSource(true);
+	dataDma (arrSymbol, lArea*2);
+	driver->setFrameSize(Spi::Size::bit8);
+}
+
+void Ili9341::string (uint16_t x, uint16_t y, const uint16_t color, const uint16_t fon, const char *str, Font &f, int8_t interval)
+{
+	uint16_t tempX = x;
+	while (*str)
+	{
+		symbol (tempX, y, color, fon, *str++, f);
+		tempX +=  f.getWidth() + interval;
+	}
+}
+
+void Ili9341::drawArr (uint16_t x , uint16_t y, const uint16_t color, const uint16_t fon, const uint8_t *arr, uint16_t l, uint16_t width)
+{
+
+}
+
+void Ili9341::drawPic (uint16_t x , uint16_t y, const uint16_t *arr, uint16_t length, uint16_t width)
+{
+
+}
+
+void Ili9341::horLine (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t thick)
+{
+	setArea(x, y, x+length, y+thick-1);
+	command(ili9341Commands::memoryWrite);
+	driver->setFrameSize(Spi::Size::bit16);
+	dc.set();
+	dma->setIncSource(false);
+	dataDma (color, length*thick*2+thick*2);
+	driver->setFrameSize(Spi::Size::bit8);
+}
+
+void Ili9341::verLine (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t thick)
+{
+	setArea(x, y, x+thick-1, y+length);
+	command(ili9341Commands::memoryWrite);
+	driver->setFrameSize(Spi::Size::bit16);
+	dc.set();
+	dma->setIncSource(false);
+	dataDma (color, length*thick*2+2);
+	driver->setFrameSize(Spi::Size::bit8);
+}
+
+void Ili9341::line (uint16_t x, uint16_t y, uint16_t color, uint16_t length, uint8_t thick)
+{
+
+}
+
+void Ili9341::rectangle (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t width, uint8_t thick)
+{
+	horLine(x, y, color, length, thick);
+	horLine(x, y+width-thick, color, length, thick);
+	verLine(x, y, color, width, thick);
+	verLine(x+length, y, color, width, thick);
 }
 
