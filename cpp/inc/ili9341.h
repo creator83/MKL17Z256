@@ -93,11 +93,13 @@ public:
 	void setCursor (uint16_t x , uint16_t y);
 	void setArea (uint16_t x1 , uint16_t y1, uint16_t x2, uint16_t y2);
 	void drawArr (uint16_t x , uint16_t y, const uint16_t color, const uint16_t fon, const uint8_t *arr, uint16_t l, uint16_t width);
-	void drawPic (uint16_t x , uint16_t y, const uint16_t *arr, uint16_t length, uint16_t width);
+	void drawPic (uint16_t x , uint16_t y, const uint16_t *arr, uint16_t length, uint16_t height);
 	void horLine (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t thick);
 	void verLine (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t thick);
 	void line (uint16_t x, uint16_t y, uint16_t color, uint16_t length, uint8_t thick);
-	void rectangle (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t width, uint8_t thick);
+	void rectangle (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t height, uint8_t thick);
+	void rectangle (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t height);
+	void gradientVer (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t height);
 protected:
 private:
 	void data (uint8_t);

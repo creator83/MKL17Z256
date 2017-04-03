@@ -266,9 +266,15 @@ void Ili9341::drawArr (uint16_t x , uint16_t y, const uint16_t color, const uint
 
 }
 
-void Ili9341::drawPic (uint16_t x , uint16_t y, const uint16_t *arr, uint16_t length, uint16_t width)
+void Ili9341::drawPic (uint16_t x , uint16_t y, const uint16_t *arr, uint16_t length, uint16_t height)
 {
-
+	setArea(x, y, x+length, y+height);
+	command(ili9341Commands::memoryWrite);
+	driver->setFrameSize(Spi::Size::bit16);
+	dc.set();
+	dma->setIncSource(true);
+	dataDma (arr, height*length*2+2);
+	driver->setFrameSize(Spi::Size::bit8);
 }
 
 void Ili9341::horLine (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t thick)
@@ -298,11 +304,31 @@ void Ili9341::line (uint16_t x, uint16_t y, uint16_t color, uint16_t length, uin
 
 }
 
-void Ili9341::rectangle (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t width, uint8_t thick)
+void Ili9341::rectangle (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t height, uint8_t thick)
 {
 	horLine(x, y, color, length, thick);
-	horLine(x, y+width-thick, color, length, thick);
-	verLine(x, y, color, width, thick);
-	verLine(x+length, y, color, width, thick);
+	horLine(x, y+height-thick, color, length, thick);
+	verLine(x, y, color, height, thick);
+	verLine(x+length, y, color, height, thick);
+}
+
+void Ili9341::rectangle (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t height)
+{
+	setArea(x, y, x+length, y+height);
+	command(ili9341Commands::memoryWrite);
+	driver->setFrameSize(Spi::Size::bit16);
+	dc.set();
+	dma->setIncSource(false);
+	dataDma (color, height*length*2+(height+1)*2);
+	driver->setFrameSize(Spi::Size::bit8);
+}
+
+void Ili9341::gradientVer (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t height)
+{
+	uint16_t grad = 5;//sizeof (color);
+	uint8_t dHeight = height/grad;
+	for (uint16_t i=0;i<grad;++i){
+		rectangle (x, y+dHeight*i, &color [i], length, dHeight);
+	}
 }
 

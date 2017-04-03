@@ -4,6 +4,7 @@
 #include "font.h"
 #include "mfont.h"
 #include "flashspi.h"
+#include "rgb.h"
 
 Tact frq;
 Spi spiLcd (Spi::SPI_N::SPI_1);
@@ -29,7 +30,9 @@ int main ()
 	Dma dma0 (Dma::dmaChannel::ch0);
 	display.setDma(dma0);
 
-	Flash (spimem, Gpio::Port::C, 4);
+	Flash memory (spimem, Gpio::Port::C, 4);
+	memory.readID();
+
 	Font sFontRus (smallTimesNewRomanRus::simbols);
 	sFontRus.setHeight(8);
 	sFontRus.setWidth(8);
@@ -45,6 +48,9 @@ int main ()
 	display.horLine(0,200, &colors16bit::BLUE, 320, 2);
 	display.verLine(200,0, &colors16bit::BLUE, 240, 16);
 	display.rectangle (20,20, &colors16bit::BLUE, 140, 80, 28);
+	display.rectangle (100, 100, &colors16bit::CYAN, 100, 50);
+	display.gradientVer(200,0, c, 119, 200);
+	display.drawPic(0,0, &picture::monkeys[0], 320, 240);
 	while (1)
 	{
 		/*for (uint8_t i=0;i<5;++i){
