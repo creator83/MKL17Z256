@@ -35,8 +35,6 @@ int main ()
 	/*memory.writeEnable ();
 	memory.readStatus ();*/
 	//memory.eraseChip ();
-	memory.readStatus ();
-	memory.readStatus ();
 	memory.writePage (&rusFont::times16[0], 0, 200);
 	memory.read (block, 0, 200);
 	Font sFontRus (smallTimesNewRomanRus::simbols);

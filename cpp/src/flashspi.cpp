@@ -22,6 +22,7 @@ void Flash::writeByte (uint8_t)
 void Flash::writePage (const uint8_t * buffer, uint32_t addr, uint16_t n)
 {
 	writeEnable();
+	readStatus ();
 	cs.clear();
 	while (!driver->flagSptef());
 	driver->putDataDl(PageProgram);
