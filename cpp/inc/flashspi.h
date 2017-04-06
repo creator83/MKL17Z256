@@ -35,7 +35,7 @@ public:
 
   Flash (Spi &, Gpio::Port p, uint8_t pin);
   void writeByte (uint8_t);
-  void writePage (uint8_t * buffer, uint32_t addr, uint16_t n);
+  void writePage (const uint8_t * buffer, uint32_t addr, uint16_t n);
   void write (uint8_t * buffer, uint32_t addr, uint16_t n);
   void readID ();
   uint16_t readStatus ();

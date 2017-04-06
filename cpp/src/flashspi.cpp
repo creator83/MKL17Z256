@@ -19,7 +19,7 @@ void Flash::writeByte (uint8_t)
 
 }
 
-void Flash::writePage (uint8_t * buffer, uint32_t addr, uint16_t n)
+void Flash::writePage (const uint8_t * buffer, uint32_t addr, uint16_t n)
 {
 	writeEnable();
 	cs.clear();
@@ -36,6 +36,8 @@ void Flash::writePage (uint8_t * buffer, uint32_t addr, uint16_t n)
 		while (!driver->flagSptef());
 		driver->putDataDl(*buffer++);
 	}
+	while (!driver->flagSprf());
+	uint8_t dummy = driver->getDataDl();
 	cs.set();
 }
 
@@ -98,7 +100,8 @@ void Flash::writeEnable ()
 	cs.clear();
 	while (!driver->flagSptef());
 	driver->putDataDl(WriteEnable);
-	while (!driver->flagSptef());
+	while (!driver->flagSprf());
+	uint8_t dummy = driver->getDataDl();
 	cs.set();
 }
 
@@ -116,17 +119,29 @@ void Flash::read (uint8_t * buffer, uint32_t addr, uint16_t n)
 	cs.clear();
 	while (!driver->flagSptef());
 	driver->putDataDl(ReadData);
+	while (!driver->flagSprf());
+	uint8_t dummy = driver->getDataDl();
 	while (!driver->flagSptef());
 	driver->putDataDl(addr>>16);
+	while (!driver->flagSprf());
+	dummy = driver->getDataDl();
 	while (!driver->flagSptef());
 	driver->putDataDl(addr>>8);
+	while (!driver->flagSprf());
+	dummy = driver->getDataDl();
 	while (!driver->flagSptef());
 	driver->putDataDl(addr);
+	while (!driver->flagSprf());
+	dummy = driver->getDataDl();
 	for (uint16_t i=0;i<n;++i)
 	{
+		while (!driver->flagSptef());
+		driver->putDataDl(0);
 		while (!driver->flagSprf());
 		*buffer++ = driver->getDataDl();
 	}
+	while (!driver->flagSprf());
+	dummy = driver->getDataDl();
 	cs.set();
 }
 
@@ -150,12 +165,13 @@ void Flash::eraseSector (uint32_t addr)
 void Flash::eraseChip ()
 {
 	writeEnable();
-	while (flagBusy());
+	//while (flagBusy());
 	cs.clear();
 	driver->putDataDl(ChipErase);
-	while (!driver->flagSptef());
+	while (!driver->flagSprf());
+	uint8_t dummy = driver->getDataDl();
 	cs.set();
-	while (flagBusy());
+	//while (flagBusy());
 }
 
 bool Flash::flagBusy ()

@@ -11,6 +11,7 @@ Spi spiLcd (Spi::SPI_N::SPI_1);
 Spi spimem (Spi::SPI_N::SPI_0);
 
 uint16_t c [5] = {colors16bit::BLACK, colors16bit::RED, colors16bit::BLUE, colors16bit::GREEN, colors16bit::YELLOW};
+uint8_t block [200];
 int main ()
 {
 	Pin light (Gpio::Port::C, 3);
@@ -31,8 +32,13 @@ int main ()
 	display.setDma(dma0);
 
 	Flash memory (spimem, Gpio::Port::C, 4);
-	memory.readID();
-
+	/*memory.writeEnable ();
+	memory.readStatus ();*/
+	//memory.eraseChip ();
+	memory.readStatus ();
+	memory.readStatus ();
+	memory.writePage (&rusFont::times16[0], 0, 200);
+	memory.read (block, 0, 200);
 	Font sFontRus (smallTimesNewRomanRus::simbols);
 	sFontRus.setHeight(8);
 	sFontRus.setWidth(8);
