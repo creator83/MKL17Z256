@@ -1,37 +1,27 @@
-#include "MKL17Z4.h"                 // Device header
+#include "MKL17Z4.h"
 
-/*
- SPI0
- C: CS-4, SCK-5, MOSI-6,MISO-7
- D: CS-0, SCK-1, MOSI-2,MISO-3
- E: CS-16, SCK-17, MOSI-18,MISO-19
+#ifndef FLEXIO_H_
+#define FLEXIO_H_
 
-
- SPI1
- D:CS-4, SCK-5, MOSI-6,MISO-7
-*/
-
-#ifndef FLEXIO_H
-#define FLEXIO_H
-
-class Flexio
-{
-//variables
+class Flexio {
 public:
-
-
-protected:
-
+	enum class interface {spi, i2c};
+	enum class nBuffer {buffer0, buffer1, buffer2, buffer3};
+	enum class spiDivider {div4=4, div8=8, div16=16, div32=32, div64=64, div128=128};
 private:
-
-//functions
+	uint8_t sBuffer;
 public:
-	Flexio ();
-
+	Flexio(interface i, nBuffer b);
+	void setInterface (interface i, nBuffer b);
+	void putData (uint32_t data);
+	uint32_t getData ();
+	uint32_t transmite (uint32_t data);
+	uint32_t receive ();
+	uint32_t exchange (uint32_t data);
+	bool statusFlag (uint8_t);
 private:
+	void setSpi(nBuffer b);
+	void setI2c (nBuffer b);
 };
 
-
-
-#endif
-
+#endif /* FLEXIO_H_ */

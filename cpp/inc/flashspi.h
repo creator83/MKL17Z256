@@ -2,6 +2,7 @@
 #include "pin.h"
 #include "spi.h"
 #include "delay.h"
+#include "dma.h"
 
 #ifndef FLASHSPI_H
 #define FLASHSPI_H
@@ -35,6 +36,7 @@ private:
   Pin cs;
   uint16_t deviceId;
   uint8_t manufacturId;
+  Dma * dma;
 
 public:
 
@@ -52,6 +54,8 @@ public:
   void writeDisable ();
   void read (uint8_t * buffer, uint32_t addr, uint16_t n);
   void read16 (uint16_t * buffer, uint32_t addr, uint16_t n);
+  void read16Dma (uint8_t * buffer, uint32_t addr, uint16_t n);
+  void dataDma (uint32_t dest, uint32_t n);
   void eraseSector (uint32_t addr);
   void eraseChip ();
   bool flagBusy ();
@@ -60,7 +64,7 @@ public:
   void powerDown ();
   void powerUp ();
   void getCapacity ();
-
+  void setDma (Dma &);
 
 
 };

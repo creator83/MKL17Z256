@@ -160,6 +160,34 @@ void Flash::read16 (uint16_t * buffer, uint32_t addr, uint16_t n)
 	driver->setFrameSize (Spi::Size::bit8);
 }
 
+void Flash::read16Dma (uint8_t * buffer, uint32_t addr, uint16_t n)
+{
+	driver->setFrameSize (Spi::Size::bit16);
+	cs.clear();
+	command16(flashCommands::ReadData, addr>>16);
+	command16(addr>>8, addr);
+	dma->setIncDestination(false);
+	dataDma ((uint32_t)SPI1->DL, 153600);
+	for (uint16_t i=0;i<n;++i)
+	{
+		*buffer++ = command16(0, 0);
+	}
+	cs.set();
+	driver->setFrameSize (Spi::Size::bit8);
+}
+
+void Flash::dataDma (uint32_t dest, uint32_t n)
+{
+	dma->setSource(dest);
+	dma->setLength(n);
+	DMA0->DMA[dma->getChannel()].DCR |= DMA_DCR_ERQ_MASK;
+	driver->enableDma(Spi::dma::receive);
+	while (!dma->flagDone());
+	DMA0->DMA[dma->getChannel()].DCR &= ~ DMA_DCR_ERQ_MASK;
+	dma->clearFlags();
+	driver->disableDma(Spi::dma::receive);
+}
+
 void Flash::eraseSector (uint32_t addr)
 {
 	writeEnable();
@@ -227,3 +255,14 @@ void Flash::getCapacity ()
 
 }
 
+void Flash::setDma (Dma &d)
+{
+	dma = &d;
+	dma->setDsize(Dma::size::bit16);
+	dma->setSsize(Dma::size::bit16);
+	dma->setDestination((uint32_t)&driver->getSpiPtr()->DL);
+	dma->enableDmaMux(Dma::dmaMux::spi0Rx);
+	//driver->setDma(d);
+	dma->setIncSource(false);
+	DMA0->DMA[dma->getChannel()].DCR |= DMA_DCR_CS_MASK;
+}
