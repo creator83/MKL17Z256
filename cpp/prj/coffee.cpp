@@ -9,13 +9,13 @@
 Tact frq;
 Spi spiLcd (Spi::SPI_N::SPI_1);
 Spi spimem (Spi::SPI_N::SPI_0);
-
+Dma dma1 (Dma::dmaChannel::ch1);
 uint16_t c [5] = {colors16bit::BLACK, colors16bit::RED, colors16bit::BLUE, colors16bit::GREEN, colors16bit::YELLOW};
 
 //uint8_t dest2 [25600];
 //uint16_t monk [12800];
 uint16_t monk1 [12800];
-
+uint16_t monk2 [50];
 int main ()
 {
 
@@ -37,6 +37,7 @@ int main ()
 	display.setDma(dma0);
 	uint16_t i=0;
 	Flash memory (spimem, Gpio::Port::C, 4);
+	memory.setDma(dma1);
 	/*memory.writeEnable ();
 	memory.readStatus ();*/
 	//memory.read (dest, 0, 10);
@@ -49,6 +50,7 @@ int main ()
 
 	//memory.read (monk1, 0, 40);
 	memory.read16 (monk1, 0, 12800);
+	memory.read16Dma (monk2, 0, 50);
 	/*uint32_t add=0;
 	for (uint16_t i=0;i<600;++i, add+=256)
 	{

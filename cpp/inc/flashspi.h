@@ -54,7 +54,7 @@ public:
   void writeDisable ();
   void read (uint8_t * buffer, uint32_t addr, uint16_t n);
   void read16 (uint16_t * buffer, uint32_t addr, uint16_t n);
-  void read16Dma (uint8_t * buffer, uint32_t addr, uint16_t n);
+  void read16Dma (uint16_t * buffer, uint32_t addr, uint32_t n);
   void dataDma (uint32_t dest, uint32_t n);
   void eraseSector (uint32_t addr);
   void eraseChip ();
