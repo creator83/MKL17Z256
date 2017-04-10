@@ -105,9 +105,23 @@ void Ili9341::dataDma (const uint16_t * buf, uint32_t n)
 	while (!dma->flagDone());
 	DMA0->DMA[dma->getChannel()].DCR &= ~ DMA_DCR_ERQ_MASK;
 	dma->clearFlags();
-
-
 	driver->disableDma(Spi::dma::transmit);
+}
+
+void Ili9341::dataDma8 (const uint8_t * buf, uint32_t n)
+{
+	dma->setDsize(Dma::size::bit8);
+	dma->setSsize(Dma::size::bit8);
+	dma->setSource((uint32_t )buf);
+	dma->setLength(n);
+	DMA0->DMA[dma->getChannel()].DCR |= DMA_DCR_ERQ_MASK;
+	driver->enableDma(Spi::dma::transmit);
+	while (!dma->flagDone());
+	DMA0->DMA[dma->getChannel()].DCR &= ~ DMA_DCR_ERQ_MASK;
+	dma->clearFlags();
+	driver->disableDma(Spi::dma::transmit);
+	dma->setDsize(Dma::size::bit16);
+	dma->setSsize(Dma::size::bit16);
 }
 
 
@@ -275,6 +289,15 @@ void Ili9341::drawPic (uint16_t x , uint16_t y, const uint16_t *arr, uint16_t le
 	dma->setIncSource(true);
 	dataDma (arr, height*length*2+2);
 	driver->setFrameSize(Spi::Size::bit8);
+}
+
+void Ili9341::drawPic8 (uint16_t x , uint16_t y, const uint8_t *arr, uint16_t length, uint16_t height)
+{
+	setArea(x, y, x+length, y+height);
+	command(ili9341Commands::memoryWrite);
+	dc.set();
+	dma->setIncSource(true);
+	dataDma8 (arr, height*length*2);
 }
 
 void Ili9341::horLine (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t thick)

@@ -94,6 +94,7 @@ public:
 	void setArea (uint16_t x1 , uint16_t y1, uint16_t x2, uint16_t y2);
 	void drawArr (uint16_t x , uint16_t y, const uint16_t color, const uint16_t fon, const uint8_t *arr, uint16_t l, uint16_t width);
 	void drawPic (uint16_t x , uint16_t y, const uint16_t *arr, uint16_t length, uint16_t height);
+	void drawPic8 (uint16_t x , uint16_t y, const uint8_t *arr, uint16_t length, uint16_t height);
 	void horLine (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t thick);
 	void verLine (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t thick);
 	void line (uint16_t x, uint16_t y, uint16_t color, uint16_t length, uint8_t thick);
@@ -105,6 +106,7 @@ private:
 	void data (uint8_t);
 	void data16 (uint16_t);
 	void dataDma (const uint16_t * buf, uint32_t n);
+	void dataDma8 (const uint8_t * buf, uint32_t n);
 	void command (uint8_t);
 	void write (uint8_t);
 	void init ();

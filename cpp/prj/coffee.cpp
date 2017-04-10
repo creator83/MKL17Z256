@@ -11,9 +11,14 @@ Spi spiLcd (Spi::SPI_N::SPI_1);
 Spi spimem (Spi::SPI_N::SPI_0);
 
 uint16_t c [5] = {colors16bit::BLACK, colors16bit::RED, colors16bit::BLUE, colors16bit::GREEN, colors16bit::YELLOW};
-uint8_t block [200];
+
+//uint8_t dest2 [25600];
+//uint16_t monk [12800];
+uint16_t monk1 [12800];
+
 int main ()
 {
+
 	Pin light (Gpio::Port::C, 3);
 	light.set();
 	//pins for lcd
@@ -30,13 +35,30 @@ int main ()
 	Ili9341 display (spiLcd, Gpio::Port::D, 7, Gpio::Port::E, 0);
 	Dma dma0 (Dma::dmaChannel::ch0);
 	display.setDma(dma0);
-
+	uint16_t i=0;
 	Flash memory (spimem, Gpio::Port::C, 4);
 	/*memory.writeEnable ();
 	memory.readStatus ();*/
+	//memory.read (dest, 0, 10);
 	//memory.eraseChip ();
-	memory.writePage (&rusFont::times16[0], 0, 200);
-	memory.read (block, 0, 200);
+	/*uint32_t add=0;
+		for (uint16_t i=0;i<600;++i, add+=128)
+		{
+			memory.writePage16 (&picture::monkeys[add], add, 128);
+		}*/
+
+	//memory.read (monk1, 0, 40);
+	memory.read16 (monk1, 0, 12800);
+	/*uint32_t add=0;
+	for (uint16_t i=0;i<600;++i, add+=256)
+	{
+		memory.writePage (&picture::monkeys[add], add, 256);
+	}*/
+	//memory.writePage (picture::monkeys, 0, 0xFF);
+	//while (memory.flagBusy()) ++i;
+	//memory.writeEnable ();
+
+	//memory.read (dest2, 0, 25600);
 	Font sFontRus (smallTimesNewRomanRus::simbols);
 	sFontRus.setHeight(8);
 	sFontRus.setWidth(8);
@@ -54,7 +76,7 @@ int main ()
 	display.rectangle (20,20, &colors16bit::BLUE, 140, 80, 28);
 	display.rectangle (100, 100, &colors16bit::CYAN, 100, 50);
 	display.gradientVer(200,0, c, 119, 200);
-	display.drawPic(0,0, &picture::monkeys[0], 320, 240);
+	display.drawPic(0,0, monk1, 320, 40);
 	while (1)
 	{
 		/*for (uint8_t i=0;i<5;++i){

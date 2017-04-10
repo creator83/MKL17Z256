@@ -6,9 +6,13 @@
 #ifndef FLASHSPI_H
 #define FLASHSPI_H
 
+
+namespace flashCommands {
 const uint8_t WriteEnable = 0x06;
 const uint8_t WriteDisable = 0x04;
-const uint8_t ReadStatusReg = 0x05;
+const uint8_t ReadStatusReg1 = 0x05;
+const uint8_t ReadStatusReg2 = 0x35;
+const uint8_t ReadStatusReg3 = 0x15;
 const uint8_t WriteStatusReg = 0x01;
 const uint8_t ReadData = 0x03;
 const uint8_t FastReadData = 0x0B;
@@ -22,6 +26,7 @@ const uint8_t ReleasePowerDown = 0xAB;
 const uint8_t DeviceID = 0xAB;
 const uint8_t ManufactDeviceID = 0x90;
 const uint8_t JedecDeviceID = 0x9F;
+}
 
 class Flash
 {
@@ -36,17 +41,22 @@ public:
   Flash (Spi &, Gpio::Port p, uint8_t pin);
   void writeByte (uint8_t);
   void writePage (const uint8_t * buffer, uint32_t addr, uint16_t n);
+  void writePage16 (const uint16_t * buffer, uint32_t addr, uint16_t n);
   void write (uint8_t * buffer, uint32_t addr, uint16_t n);
   void readID ();
-  uint16_t readStatus ();
+  uint16_t readStatus1 ();
+  uint16_t readStatus2 ();
+  uint16_t readStatus3 ();
   void writeStatus (uint8_t);
   void writeEnable ();
   void writeDisable ();
   void read (uint8_t * buffer, uint32_t addr, uint16_t n);
+  void read16 (uint16_t * buffer, uint32_t addr, uint16_t n);
   void eraseSector (uint32_t addr);
   void eraseChip ();
   bool flagBusy ();
-
+  uint8_t command (uint8_t);
+  uint16_t command16 (uint8_t h, uint8_t l);
   void powerDown ();
   void powerUp ();
   void getCapacity ();
