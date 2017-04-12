@@ -30,14 +30,13 @@ const uint8_t ManufactDeviceID = 0x90;
 const uint8_t JedecDeviceID = 0x9F;
 }
 
-const uint16_t dummy=0;
 
 class Flash
 {
 private:
   Spi * driver;
   Pin cs;
-  uint16_t deviceId;
+  uint16_t deviceId, dummy;
   uint8_t manufacturId;
   Dma * transmitter;
   Dma * txDummy;
@@ -60,9 +59,9 @@ public:
   void read (uint8_t * buffer, uint32_t addr, uint16_t n);
   void read16 (uint16_t * buffer, uint32_t addr, uint16_t n);
   void read16Dma (uint16_t * buffer, uint32_t addr, uint32_t n);
-  void txToDma (void *, uint32_t addr, uint32_t n);
+  void txToDma (uint32_t dest, uint32_t addr, uint32_t n);
   void dataDma (uint32_t dest, uint32_t n);
-  void txDum (uint32_t dest, uint32_t n);
+  void txDum (uint32_t n);
   void eraseSector (uint32_t addr);
   void eraseChip ();
   bool flagBusy ();
