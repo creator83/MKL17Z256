@@ -62,7 +62,7 @@ public:
   void read16Dma (uint16_t * buffer, uint32_t addr, uint32_t n);
   void txToDma (void *, uint32_t addr, uint32_t n);
   void dataDma (uint32_t dest, uint32_t n);
-  void transmiteDma (uint32_t dest, uint32_t n);
+  void txDum (uint32_t dest, uint32_t n);
   void eraseSector (uint32_t addr);
   void eraseChip ();
   bool flagBusy ();

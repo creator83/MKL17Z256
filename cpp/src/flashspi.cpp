@@ -221,6 +221,24 @@ void Flash::dataDma (uint32_t dest, uint32_t n)
 	driver->disableDma(Spi::dma::receive);
 }
 
+void Flash::txDum (uint32_t dest, uint32_t n)
+{
+	driver->setFrameSize (Spi::Size::bit16);
+	cs.clear();
+	//settings txDummy
+	txDummy->setLength(n);
+	txDummy->setDestination((uint32_t)driver->getSpiPtr()->DL);
+	DMA0->DMA[txDummy->getChannel()].DCR |= DMA_DCR_ERQ_MASK;
+	driver->enableDma(Spi::dma::transmit);
+	timer->start();
+	DMA0->DMA[txDummy->getChannel()].DCR &= ~ DMA_DCR_ERQ_MASK;
+	txDummy->clearFlags();
+	driver->disableDma(Spi::dma::transmit);
+	cs.set();
+	timer->stop();
+	driver->setFrameSize (Spi::Size::bit8);
+
+}
 void Flash::eraseSector (uint32_t addr)
 {
 	writeEnable();
