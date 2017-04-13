@@ -1,4 +1,4 @@
-#include "MKL17Z4.h"
+#include "device.h"
 #include "mcglight.h"
 #include "pit.h"
 

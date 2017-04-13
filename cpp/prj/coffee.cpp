@@ -1,26 +1,47 @@
-#include "MKL17Z4.h"                    // Device header
+#include "device.h"                    // Device header
 #include "ili9341.h"
 #include "colors16bit.h"
 #include "font.h"
 #include "mfont.h"
 #include "flashspi.h"
 #include "rgb.h"
+#include "flexio.h"
+#include "pin.h"
+#include "coffeebut.h"
+#include "shape.h"
+#include "cpic.h"
 
 Tact frq;
 Spi spiLcd (Spi::SPI_N::SPI_1);
 Spi spimem (Spi::SPI_N::SPI_0);
 Dma dma1 (Dma::dmaChannel::ch1);
 Dma dma2 (Dma::dmaChannel::ch2);
-Pit pit1 (Pit::ch1, 50);
+Pit pit1 (Pit::ch1, 100);
+Ili9341 display (spiLcd, Gpio::Port::D, 7, Gpio::Port::E, 0);
+
+Pin csFxIo (Gpio::Port::A, 1, Gpio::mux::Alt3);
+Pin sckFxIo (Gpio::Port::A, 1, Gpio::mux::Alt3);
+Pin mosiFxIo (Gpio::Port::A, 1, Gpio::mux::Alt3);
+Pin misoFxIo (Gpio::Port::A, 1, Gpio::mux::Alt3);
+
 uint16_t c [5] = {colors16bit::BLACK, colors16bit::RED, colors16bit::BLUE, colors16bit::GREEN, colors16bit::YELLOW};
 
 //uint8_t dest2 [25600];
 //uint16_t monk [12800];
 uint16_t monk1 [12800];
 uint16_t monk2 [50];
+const uint16_t background = 0xc0d9;
+
+
+ColorPicture buttonLight (0, 165, imgButtons::light16, 100, 70);
+Shape * mainScreen[] = {&buttonLight};
+
 int main ()
 {
-
+	Tftdriver * lcd = &display;
+	Shape::driver = lcd;
+	Flexio touchSpi (Flexio::interface::spi, Flexio::nBuffer::buffer0);
+	touchSpi.transmite(0xfe);
 	Pin light (Gpio::Port::C, 3);
 	light.set();
 	//pins for lcd
@@ -34,7 +55,7 @@ int main ()
 	Pin mosiF (Gpio::Port::C, 6, Gpio::mux::Alt2);
 	Pin misoF (Gpio::Port::C, 7, Gpio::mux::Alt2);
 
-	Ili9341 display (spiLcd, Gpio::Port::D, 7, Gpio::Port::E, 0);
+
 	Dma dma0 (Dma::dmaChannel::ch0);
 	display.setDma(dma0);
 	uint16_t i=0;
@@ -53,6 +74,10 @@ int main ()
 	//memory.read (monk1, 0, 40);
 	memory.read16 (monk1, 0, 12800);
 	//memory.txDum (20);
+
+	display.drawPic(0, 0, 320, 240);
+	memory.txToDma ((uint32_t)&SPI1->DL, 0, 100);
+	spiLcd.setFrameSize(Spi::Size::bit8);
 	memory.txToDma ((uint32_t)monk2, 0, 100);
 	/*uint32_t add=0;
 	for (uint16_t i=0;i<600;++i, add+=256)
@@ -72,7 +97,8 @@ int main ()
 	rus.setHeight(14);
 	rus.setWidth(16);
 	rus.setShift(192);
-	display.fillScreenDma(&c[4]);
+	display.fillScreenDma(&background);
+	display.drawPic8(0,165, imgButtons::light8, 100, 70);
 	display.symbol(50, 100, colors16bit::RED, colors16bit::YELLOW,  'B', sFontRus);
 	display.string(50,50, colors16bit::RED, colors16bit::YELLOW, "Hello", sFontRus, 0);
 	display.string(50,150, colors16bit::RED, colors16bit::YELLOW, "Русский", rus, -4);

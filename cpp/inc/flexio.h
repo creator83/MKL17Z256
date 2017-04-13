@@ -7,6 +7,7 @@ class Flexio {
 public:
 	enum class interface {spi, i2c};
 	enum class nBuffer {buffer0, buffer1, buffer2, buffer3};
+	enum class nPin {fxIo0, fxIo1, fxIo2, fxIo3, fxIo4, fxIo5, fxIo6, fxIo7};
 	enum class spiDivider {div4=4, div8=8, div16=16, div32=32, div64=64, div128=128};
 private:
 	uint8_t sBuffer;

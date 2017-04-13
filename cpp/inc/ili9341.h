@@ -1,10 +1,10 @@
-#include "MKL17Z4.h"
+#include "device.h"
 #include "delay.h"
 #include "spi.h"
 #include "pin.h"
 #include "dma.h"
 #include "font.h"
-
+#include "tftdriver.h"
 
 #ifndef ILI9341_H
 #define ILI9341_H
@@ -61,7 +61,7 @@ namespace ili9341Commands
 }
 
 
-class Ili9341
+class Ili9341: public Tftdriver
 {
 //variables
 public:
@@ -85,7 +85,6 @@ public:
 	void pixel (uint16_t x , uint16_t y, const uint16_t color);
 	void fillScreen (uint16_t color);
 	void fillScreenDma (const uint16_t * color);
-
 	void symbol (uint16_t x, uint16_t y, const uint16_t color, const uint16_t fon, const uint8_t ch, Font & s);
 	//void symbol (uint16_t x, uint16_t y, const uint16_t color, const uint16_t fon, uint8_t ch, sFont & s);
 	void string (uint16_t x, uint16_t y, const uint16_t color, const uint16_t fon, const char *str, Font &f, int8_t interval);
@@ -94,7 +93,8 @@ public:
 	void setArea (uint16_t x1 , uint16_t y1, uint16_t x2, uint16_t y2);
 	void drawArr (uint16_t x , uint16_t y, const uint16_t color, const uint16_t fon, const uint8_t *arr, uint16_t l, uint16_t width);
 	void drawPic (uint16_t x , uint16_t y, const uint16_t *arr, uint16_t length, uint16_t height);
-	void drawPic8 (uint16_t x , uint16_t y, const uint8_t *arr, uint16_t length, uint16_t height);
+	void drawPic (uint16_t x , uint16_t y, uint16_t length, uint16_t height);
+	void drawPic8 (uint16_t x , uint16_t y, const uint8_t *arr, uint16_t length, uint16_t height) ;
 	void horLine (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t thick);
 	void verLine (uint16_t x, uint16_t y, const uint16_t * color, uint16_t length, uint8_t thick);
 	void line (uint16_t x, uint16_t y, uint16_t color, uint16_t length, uint8_t thick);

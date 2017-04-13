@@ -291,6 +291,14 @@ void Ili9341::drawPic (uint16_t x , uint16_t y, const uint16_t *arr, uint16_t le
 	driver->setFrameSize(Spi::Size::bit8);
 }
 
+void Ili9341::drawPic (uint16_t x , uint16_t y, uint16_t length, uint16_t height)
+{
+	setArea(x, y, x+length, y+height);
+	command(ili9341Commands::memoryWrite);
+	driver->setFrameSize(Spi::Size::bit16);
+	dc.set();
+}
+
 void Ili9341::drawPic8 (uint16_t x , uint16_t y, const uint8_t *arr, uint16_t length, uint16_t height)
 {
 	setArea(x, y, x+length, y+height);

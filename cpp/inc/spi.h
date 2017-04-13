@@ -1,4 +1,4 @@
-#include "MKL17Z4.h"                 // Device header
+#include "device.h"                 // Device header
 #include "dma.h"
 
 /*
