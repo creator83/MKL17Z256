@@ -16,13 +16,13 @@ Spi spiLcd (Spi::SPI_N::SPI_1);
 Spi spimem (Spi::SPI_N::SPI_0);
 Dma dma1 (Dma::dmaChannel::ch1);
 Dma dma2 (Dma::dmaChannel::ch2);
-Pit pit1 (Pit::ch1, 100);
+Pit pit1 (Pit::ch1, 1);
 Ili9341 display (spiLcd, Gpio::Port::D, 7, Gpio::Port::E, 0);
 
-Pin csFxIo (Gpio::Port::A, 1, Gpio::mux::Alt3);
-Pin sckFxIo (Gpio::Port::A, 1, Gpio::mux::Alt3);
-Pin mosiFxIo (Gpio::Port::A, 1, Gpio::mux::Alt3);
-Pin misoFxIo (Gpio::Port::A, 1, Gpio::mux::Alt3);
+Pin csFxIo (Gpio::Port::E, 16, Gpio::mux::Alt6);
+Pin sckFxIo (Gpio::Port::E, 17, Gpio::mux::Alt6);
+Pin mosiFxIo (Gpio::Port::A, 18, Gpio::mux::Alt6);
+Pin misoFxIo (Gpio::Port::A, 19, Gpio::mux::Alt6);
 
 uint16_t c [5] = {colors16bit::BLACK, colors16bit::RED, colors16bit::BLUE, colors16bit::GREEN, colors16bit::YELLOW};
 
@@ -33,15 +33,15 @@ uint16_t monk2 [50];
 const uint16_t background = 0xc0d9;
 
 
-ColorPicture buttonLight (0, 165, imgButtons::light16, 100, 70);
-Shape * mainScreen[] = {&buttonLight};
+//ColorPicture buttonLight (0, 165, imgButtons::light16, 100, 70);
+//Shape * mainScreen[] = {&buttonLight};
 
 int main ()
 {
-	Tftdriver * lcd = &display;
-	Shape::driver = lcd;
-	Flexio touchSpi (Flexio::interface::spi, Flexio::nBuffer::buffer0);
-	touchSpi.transmite(0xfe);
+	/*Tftdriver * lcd = &display;
+	Shape::driver = lcd;*/
+	//Flexio touchSpi (Flexio::interface::spi, Flexio::nBuffer::buffer0);
+	//touchSpi.transmite(0xfe);
 	Pin light (Gpio::Port::C, 3);
 	light.set();
 	//pins for lcd
@@ -50,7 +50,6 @@ int main ()
 	Pin mosi (Gpio::Port::D, 6, Gpio::mux::Alt2);
 
 	//pins for memory
-	//Pin csF (Gpio::Port::C, 4, Gpio::mux::Alt2);
 	Pin sckF (Gpio::Port::C, 5, Gpio::mux::Alt2);
 	Pin mosiF (Gpio::Port::C, 6, Gpio::mux::Alt2);
 	Pin misoF (Gpio::Port::C, 7, Gpio::mux::Alt2);
@@ -58,7 +57,6 @@ int main ()
 
 	Dma dma0 (Dma::dmaChannel::ch0);
 	display.setDma(dma0);
-	uint16_t i=0;
 	Flash memory (spimem, Gpio::Port::C, 4);
 	memory.setDma( dma2, dma1, pit1);
 	/*memory.writeEnable ();
@@ -72,9 +70,10 @@ int main ()
 		}*/
 
 	//memory.read (monk1, 0, 40);
-	memory.read16 (monk1, 0, 12800);
+	//memory.read16 (monk1, 0, 12800);
 	//memory.txDum (20);
-
+	display.fillScreenDma(&background);
+	display.drawPic(0,165, imgButtons::light16, 100, 70);
 	display.drawPic(0, 0, 320, 240);
 	memory.txToDma ((uint32_t)&SPI1->DL, 0, 100);
 	spiLcd.setFrameSize(Spi::Size::bit8);
@@ -97,8 +96,7 @@ int main ()
 	rus.setHeight(14);
 	rus.setWidth(16);
 	rus.setShift(192);
-	display.fillScreenDma(&background);
-	display.drawPic8(0,165, imgButtons::light8, 100, 70);
+
 	display.symbol(50, 100, colors16bit::RED, colors16bit::YELLOW,  'B', sFontRus);
 	display.string(50,50, colors16bit::RED, colors16bit::YELLOW, "Hello", sFontRus, 0);
 	display.string(50,150, colors16bit::RED, colors16bit::YELLOW, "Русский", rus, -4);
@@ -107,6 +105,7 @@ int main ()
 	display.rectangle (20,20, &colors16bit::BLUE, 140, 80, 28);
 	display.rectangle (100, 100, &colors16bit::CYAN, 100, 50);
 	display.gradientVer(200,0, c, 119, 200);
+
 	display.drawPic(0,0, monk1, 320, 40);
 	while (1)
 	{
