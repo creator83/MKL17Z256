@@ -282,12 +282,20 @@ void Ili9341::drawArr (uint16_t x , uint16_t y, const uint16_t color, const uint
 
 void Ili9341::drawPic (uint16_t x , uint16_t y, const uint16_t *arr, uint16_t length, uint16_t height)
 {
-	setArea(x, y, x+length, y+height);
+	setArea(x, y, x+length-1, y+height-1);
 	command(ili9341Commands::memoryWrite);
+	/*driver->setFrameSize(Spi::Size::bit16);
+	dc.set();
+	for (uint32_t n = 0; n < (length+1)*(height+1); n++) {
+		while (!driver->flagSptef());
+		driver->putDataDh(arr[n]>>8);
+		driver->putDataDl(arr[n]);
+	}
+	driver->setFrameSize(Spi::Size::bit8);*/
 	driver->setFrameSize(Spi::Size::bit16);
 	dc.set();
 	dma->setIncSource(true);
-	dataDma (arr, height*length*2+2);
+	dataDma (arr, (height)*(length)*2+2);
 	driver->setFrameSize(Spi::Size::bit8);
 }
 

@@ -8,7 +8,7 @@ Flash::Flash (Spi &d, Gpio::Port p, uint8_t pin)
 	driver = &d;
 	driver->setCpol(Spi::Cpol::neg);
 	driver->setCpha(Spi::Cpha::first);
-	driver->setDivision(Spi::Division::div4);
+	driver->setDivision(Spi::Division::div2);
 	driver->setFrameSize(Spi::Size::bit8);
 	cs.set();
 	driver->start();
@@ -186,15 +186,17 @@ void Flash::txToDma (uint32_t dest, uint32_t addr, uint32_t n)
 
 	//settings transmitter
 	transmitter->setDestination(dest);
+	DMA0->DMA[transmitter->getChannel()].DSR_BCR &= ~ DMA_DSR_BCR_BCR_MASK;
 	transmitter->setLength(n);
 	DMA0->DMA[transmitter->getChannel()].DCR |= DMA_DCR_ERQ_MASK;
 	driver->enableDma(Spi::dma::receive);
 
 	//settings txDummy
+	DMA0->DMA[txDummy->getChannel()].DSR_BCR &= ~ DMA_DSR_BCR_BCR_MASK;
 	txDummy->setLength(n);
 	DMA0->DMA[txDummy->getChannel()].DCR |= DMA_DCR_ERQ_MASK;
 	driver->enableDma(Spi::dma::transmit);
-	timer->start();
+	//timer->start();
 
 
 	while (!transmitter->flagDone());
@@ -317,6 +319,8 @@ void Flash::setDma (Dma &d, Dma &tx, Pit & t)
 	transmitter->enableDmaMux(Dma::dmaMux::spi0Rx);
 	transmitter->setIncSource(false);
 	DMA0->DMA[transmitter->getChannel()].DCR |= DMA_DCR_CS_MASK;
+	DMA0->DMA[2].DSR_BCR |= DMA_DCR_LINKCC(2);
+	DMA0->DMA[2].DSR_BCR |= DMA_DCR_LCH1(1);
 
 	//Settings txDummy
 	txDummy = &tx;
@@ -324,12 +328,14 @@ void Flash::setDma (Dma &d, Dma &tx, Pit & t)
 	txDummy->setSsize(Dma::size::bit16);
 	txDummy->setSource((uint32_t)&dummy);
 	txDummy->setDestination((uint32_t)&driver->getSpiPtr()->DL);
-	txDummy->enableDmaMux(Dma::dmaMux::spi0Tx);
 	txDummy->setIncSource(false);
 	txDummy->setIncDestination(false);
+	DMA0->DMA[1].DSR_BCR |= DMA_DCR_LINKCC(2);
+	DMA0->DMA[1].DSR_BCR |= DMA_DCR_LCH1(2);
 	DMA0->DMA[txDummy->getChannel()].DCR |= DMA_DCR_CS_MASK;
-	DMAMUX0->CHCFG[1] |= DMAMUX_CHCFG_TRIG_MASK;
+	txDummy->enableDmaMux(Dma::dmaMux::spi0Tx);
+	//DMAMUX0->CHCFG[1] |= DMAMUX_CHCFG_TRIG_MASK;
 
 	//Settings Pit
-	timer = &t;
+	//timer = &t;
 }

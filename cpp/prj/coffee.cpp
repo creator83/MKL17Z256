@@ -4,7 +4,7 @@
 #include "font.h"
 #include "mfont.h"
 #include "flashspi.h"
-#include "rgb.h"
+//#include "rgb.h"
 #include "flexio.h"
 #include "pin.h"
 #include "coffeebut.h"
@@ -17,7 +17,11 @@ Spi spimem (Spi::SPI_N::SPI_0);
 Dma dma1 (Dma::dmaChannel::ch1);
 Dma dma2 (Dma::dmaChannel::ch2);
 Pit pit1 (Pit::ch1, 1);
-Ili9341 display (spiLcd, Gpio::Port::D, 7, Gpio::Port::E, 0);
+//pins for lcd
+	Pin cs (Gpio::Port::D, 4, Gpio::mux::Alt2);
+	Pin sck (Gpio::Port::D, 5, Gpio::mux::Alt2);
+	Pin mosi (Gpio::Port::D, 6, Gpio::mux::Alt2);
+	Ili9341 display (spiLcd, Gpio::Port::D, 7, Gpio::Port::E, 0);
 
 Pin csFxIo (Gpio::Port::E, 16, Gpio::mux::Alt6);
 Pin sckFxIo (Gpio::Port::E, 17, Gpio::mux::Alt6);
@@ -28,9 +32,9 @@ uint16_t c [5] = {colors16bit::BLACK, colors16bit::RED, colors16bit::BLUE, color
 
 //uint8_t dest2 [25600];
 //uint16_t monk [12800];
-uint16_t monk1 [12800];
+uint16_t buffer [8400];
 uint16_t monk2 [50];
-const uint16_t background = 0xc0d9;
+const uint16_t background = 0x0abb;
 
 
 //ColorPicture buttonLight (0, 165, imgButtons::light16, 100, 70);
@@ -44,10 +48,6 @@ int main ()
 	//touchSpi.transmite(0xfe);
 	Pin light (Gpio::Port::C, 3);
 	light.set();
-	//pins for lcd
-	Pin cs (Gpio::Port::D, 4, Gpio::mux::Alt2);
-	Pin sck (Gpio::Port::D, 5, Gpio::mux::Alt2);
-	Pin mosi (Gpio::Port::D, 6, Gpio::mux::Alt2);
 
 	//pins for memory
 	Pin sckF (Gpio::Port::C, 5, Gpio::mux::Alt2);
@@ -72,11 +72,20 @@ int main ()
 	//memory.read (monk1, 0, 40);
 	//memory.read16 (monk1, 0, 12800);
 	//memory.txDum (20);
-	display.fillScreenDma(&background);
-	display.drawPic(0,165, imgButtons::light16, 100, 70);
-	display.drawPic(0, 0, 320, 240);
-	memory.txToDma ((uint32_t)&SPI1->DL, 0, 100);
-	spiLcd.setFrameSize(Spi::Size::bit8);
+	display.fillScreenDma(&colors16bit::BLACK);
+	display.drawPic(3,160, imgButtons::button1, 105, 80);
+	display.drawPic(108,160, imgButtons::button1, 105, 80);
+	display.drawPic(213,0, imgButtons::button1, 105, 80);
+	display.drawPic(213,80, imgButtons::tools, 105, 80);
+	display.drawPic(213,160, imgButtons::button1, 105, 80);
+	//display.drawPic(0, 0, 320, 240);
+	for (uint32_t i,j=0;i<154000;i+=12800, j+=20)
+	{
+		memory.txToDma ((uint32_t)buffer, i, 12800);
+		display.drawPic(0,j, buffer, 320, 20);
+	}
+
+	//spiLcd.setFrameSize(Spi::Size::bit8);
 	memory.txToDma ((uint32_t)monk2, 0, 100);
 	/*uint32_t add=0;
 	for (uint16_t i=0;i<600;++i, add+=256)
@@ -88,7 +97,7 @@ int main ()
 	//memory.writeEnable ();
 
 	//memory.read (dest2, 0, 25600);
-	Font sFontRus (smallTimesNewRomanRus::simbols);
+	/*Font sFontRus (smallTimesNewRomanRus::simbols);
 	sFontRus.setHeight(8);
 	sFontRus.setWidth(8);
 	sFontRus.setShift(32);
@@ -106,7 +115,7 @@ int main ()
 	display.rectangle (100, 100, &colors16bit::CYAN, 100, 50);
 	display.gradientVer(200,0, c, 119, 200);
 
-	display.drawPic(0,0, monk1, 320, 40);
+	display.drawPic(0,0, monk1, 320, 40);*/
 	while (1)
 	{
 		/*for (uint8_t i=0;i<5;++i){
