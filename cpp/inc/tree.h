@@ -1,4 +1,4 @@
-#include "MKL26Z4.h"
+#include "device.h"
 #include "list.h"
 #include "tbutton.h"
 
